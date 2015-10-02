@@ -1,0 +1,3 @@
+# LemonLDAP::NG repository
+deb     http://lemonldap-ng.org/deb squeeze main
+deb-src http://lemonldap-ng.org/deb squeeze main
