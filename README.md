@@ -1,6 +1,6 @@
 # LemonLDAP::NG in Docker
 
-Simple Dockerfile to create a LemonLDAP::NG docker image.
+![LL::NG+Docker](http://lemonldap-ng.org/_media/documentation/lemonldap-ng-docker.png)
 
 ## Build the image
 
