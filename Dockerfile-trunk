@@ -14,10 +14,14 @@ RUN apt-get -y update && apt-get -y upgrade
 # Install LL::NG dependencies
 RUN apt-get -y install apache2 libapache2-mod-perl2 libapache-session-perl libnet-ldap-perl libcache-cache-perl libdbi-perl perl-modules libwww-perl libcache-cache-perl libxml-simple-perl  libsoap-lite-perl libhtml-template-perl libregexp-assemble-perl libjs-jquery libxml-libxml-perl libcrypt-rijndael-perl libio-string-perl libxml-libxslt-perl libconfig-inifiles-perl libjson-perl libstring-random-perl libemail-date-format-perl libmime-lite-perl libcrypt-openssl-rsa-perl libdigest-hmac-perl libclone-perl libauthen-sasl-perl libnet-cidr-lite-perl libcrypt-openssl-x509-perl libauthcas-perl libtest-pod-perl libtest-mockobject-perl libauthen-captcha-perl libnet-openid-consumer-perl libnet-openid-server-perl libunicode-string-perl libconvert-pem-perl libmouse-perl libplack-perl libglib-perl liblasso-perl omegat
 
+# Install vim to edit files
+RUN apt-get -y install vim
+
 # Install subversion client and compilaton tools
 RUN apt-get -y install subversion make devscripts
 
 # Get trunk version of LL::NG
+WORKDIR root
 RUN svn co svn://svn.forge.objectweb.org/svnroot/lemonldap/trunk lemonldap
 
 # Install LL::NG
@@ -30,11 +34,17 @@ RUN sed -i "s/example\.com/${SSODOMAIN}/g" /etc/lemonldap-ng/* /var/lib/lemonlda
 # Unprotect the Manager (until protection works)
 RUN sed -i "s/protection\s*=\s*manager/protection = none/" /etc/lemonldap-ng/lemonldap-ng.ini
 
+# Set debug mode
+RUN sed -i "s/logLevel\s*=\s*warn/logLevel = debug/" /etc/lemonldap-ng/lemonldap-ng.ini
+RUN sed -i "s/LogLevel warn/LogLevel debug/" /etc/apache2/apache2.conf
+
 # Enable sites
 RUN a2ensite handler-apache2.conf
 RUN a2ensite portal-apache2.conf
 RUN a2ensite manager-apache2.conf
 RUN a2ensite test-apache2.conf
+
+RUN a2enmod rewrite
 
 # Remove cached configuration
 RUN rm -rf /tmp/lemonldap-ng-config
