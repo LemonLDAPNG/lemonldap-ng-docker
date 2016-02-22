@@ -21,7 +21,7 @@ apt-get -y install nginx-extras supervisor libapache-session-perl libnet-ldap-pe
 	libtest-mockobject-perl libauthen-captcha-perl libnet-openid-consumer-perl \
 	libnet-openid-server-perl libunicode-string-perl libconvert-pem-perl \
 	libmouse-perl libplack-perl libglib-perl liblasso-perl yui-compressor dh-systemd \
-	vim subversion make devscript && \
+	vim subversion make devscripts && \
 rm -rf /var/lib/apt/lists/*
 
 # Get trunk version of LL::NG
