@@ -12,7 +12,7 @@ ENV SSODOMAIN example.com
 RUN apt-get -y update && apt-get -y dist-upgrade
 
 # Install LemonLDAP::NG repo
-RUN apt-get -y install wget
+RUN apt-get -y install wget apt-transport-https
 RUN wget -O - http://lemonldap-ng.org/_media/rpm-gpg-key-ow2 | apt-key add -
 COPY lemonldap-ng.list /etc/apt/sources.list.d/
 
