@@ -22,6 +22,9 @@ RUN apt-get -y update && apt-get -y install apache2 libapache2-mod-perl2 libapac
 # Change SSO Domain
 RUN sed -i "s/example\.com/${SSODOMAIN}/g" /etc/lemonldap-ng/* /var/lib/lemonldap-ng/conf/lmConf-1.js /var/lib/lemonldap-ng/test/index.pl
 
+# Comment CGIPassAuth directive
+RUN sed -i 's/CGIPassAuth on/#CGIPassAuth on/g' /etc/lemonldap-ng/portal-apache2.conf
+
 # Enable sites
 RUN a2ensite handler-apache2.conf
 RUN a2ensite portal-apache2.conf
