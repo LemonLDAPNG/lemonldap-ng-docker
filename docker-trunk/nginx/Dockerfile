@@ -8,13 +8,19 @@ LABEL name="llng-nginx-trunk" \
       version="v0.0.1"
 
 # Change SSO DOMAIN here
-ENV SSODOMAIN example.com
+ENV SSODOMAIN example.com \ 
+    DUMBINITVERSION 1.2.0
 
 COPY etc.supervisor.conf.d.supervisord.conf /
 
 # Update system and install LL::NG dependencies
 RUN apt-get -y update \
-    && apt-get -y upgrade \
+    && apt -y install wget apt-transport-https \
+    && apt -y dist-upgrade  \
+    && echo "# Install Dumb-init" \
+    && wget https://github.com/Yelp/dumb-init/releases/download/v${DUMBINITVERSION}/dumb-init_${DUMBINITVERSION}_amd64.deb \
+    && dpkg -i dumb-init_${DUMBINITVERSION}_amd64.deb \
+    && apt install -f -y \
     && apt-get -y install nginx-extras supervisor libapache-session-perl libnet-ldap-perl \
 	libcache-cache-perl libdbi-perl perl-modules libwww-perl libcache-cache-perl \
 	libxml-simple-perl  libsoap-lite-perl libhtml-template-perl \
@@ -27,18 +33,19 @@ RUN apt-get -y update \
 	libnet-openid-server-perl libunicode-string-perl libconvert-pem-perl \
 	libmouse-perl libplack-perl libglib-perl liblasso-perl yui-compressor dh-systemd \
 	vim subversion make devscripts libdbd-sqlite3-perl libemail-sender-perl \
-        libgd-securityimage-perl libimage-magick-perl \
+        libgd-securityimage-perl libimage-magick-perl apache2 \
     && rm -rf /var/lib/apt/lists/* \
     && echo "# Get trunk version of LL::NG" \
     && cd /root \
     && svn co svn://svn.forge.objectweb.org/svnroot/lemonldap/trunk lemonldap \
     && echo "# Install LL::NG" \
     && cd lemonldap \
-    && make debian-install-for-nginx 
+    && make debian-install-for-nginx \
     && rm -rf /tmp/*lemonldap* /root/lemonldap/* \
     && mv /etc.supervisor.conf.d.supervisord.conf /etc/supervisor/conf.d/supervisord.conf \
     && echo "# Change SSO Domain" \
-    && sed -i "s/example\.com/${SSODOMAIN}/g" /etc/lemonldap-ng/* /var/lib/lemonldap-ng/conf/lmConf-1.js /var/lib/lemonldap-ng/test/index.pl \
+    && sed -i "s/example\.com/${SSODOMAIN}/g" /etc/lemonldap-ng/*  /var/lib/lemonldap-ng/test/index.pl \
+    && echo "#/var/lib/lemonldap-ng/conf/lmConf-1.js" \
     && echo "# Set debug mode" \
     && sed -i "s/logLevel\s*=\s*warn/logLevel = debug/" /etc/lemonldap-ng/lemonldap-ng.ini \
     && echo "# Enable sites" \
@@ -54,5 +61,5 @@ RUN apt-get -y update \
     && echo "\ndaemon off;" >> /etc/nginx/nginx.conf
 
 EXPOSE 80 443
-VOLUME ["/var/log/nginx", "/etc/apache2", "/etc/lemonldap-ng", "/var/lib/lemonldap-ng/conf", "/var/lib/lemonldap-ng/sessions", "/var/lib/lemonldap-ng/psessions"]
-ENTRYPOINT ["/usr/bin/supervisord"]
+VOLUME ["/var/log/nginx", "/etc/lemonldap-ng", "/var/lib/lemonldap-ng/conf", "/var/lib/lemonldap-ng/sessions", "/var/lib/lemonldap-ng/psessions"]
+ENTRYPOINT ["dumb-init","--","/usr/bin/supervisord"]
