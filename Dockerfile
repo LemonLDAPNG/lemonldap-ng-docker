@@ -4,7 +4,8 @@
 # Start from Debian Jessie
 FROM debian:jessie
 MAINTAINER Clément OUDOT
-LABEL name="llng-apache2"
+LABEL name="llng-apache2" \
+      version="v0.0.1"
 
 # Change SSO DOMAIN here
 ENV SSODOMAIN example.com \
