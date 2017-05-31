@@ -27,7 +27,8 @@ RUN apt -y update \
         libtest-pod-perl libtest-mockobject-perl libauthen-captcha-perl \
         libnet-openid-consumer-perl libnet-openid-server-perl \
         libunicode-string-perl libconvert-pem-perl libmouse-perl libplack-perl \
-        libglib-perl liblasso-perl yui-compressor dh-systemd \
+        libglib-perl liblasso-perl yui-compressor dh-systemd libdbd-sqlite3-perl \
+        libemail-sender-perl libgd-securityimage-perl libimage-magick-perl \
     && echo "# Install vim to edit files" \
     && apt-get -y install vim \
     && echo "# Install subversion client and compilaton tools" \
@@ -39,7 +40,8 @@ RUN apt -y update \
     && cd lemonldap \
     && make debian-install-for-apache \
     && echo "# Change SSO Domain" \
-    && sed -i "s/example\.com/${SSODOMAIN}/g" /etc/lemonldap-ng/* /var/lib/lemonldap-ng/conf/lmConf-1.js /var/lib/lemonldap-ng/test/index.pl \
+    && sed -i "s/example\.com/${SSODOMAIN}/g" /etc/lemonldap-ng/*  /var/lib/lemonldap-ng/test/index.pl \
+    && echo "/var/lib/lemonldap-ng/conf/lmConf-1.js" \
     && echo "# Set debug mode" \
     && sed -i "s/logLevel\s*=\s*warn/logLevel = debug/" /etc/lemonldap-ng/lemonldap-ng.ini \
     && sed -i "s/LogLevel warn/LogLevel debug/" /etc/apache2/apache2.conf \
@@ -48,7 +50,6 @@ RUN apt -y update \
     && a2enmod fcgid perl alias rewrite \
     && echo "# Remove cached configuration" \
     && rm -rf /tmp/lemonldap-ng-config \
-    && apt clean \
     && rm -fr /var/lib/apt/lists/*
 
 EXPOSE 80 443
