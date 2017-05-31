@@ -8,7 +8,7 @@ LABEL name="llng-nginx-trunk" \
       version="v0.0.1"
 
 # Change SSO DOMAIN here
-ENV SSODOMAIN example.com \ 
+ENV SSODOMAIN example.com \
     DUMBINITVERSION 1.2.0
 
 COPY etc.supervisor.conf.d.supervisord.conf /
