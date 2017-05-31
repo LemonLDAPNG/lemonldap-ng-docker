@@ -7,7 +7,8 @@ MAINTAINER Clément OUDOT
 LABEL name="llng-apache2"
 
 # Change SSO DOMAIN here
-ENV SSODOMAIN example.com
+ENV SSODOMAIN example.com \
+    DUMBINITVERSION 1.2.0
 
 COPY lemonldap-ng.list /
 
@@ -15,6 +16,10 @@ COPY lemonldap-ng.list /
 RUN apt -y update \
     && apt -y install wget apt-transport-https \
     && apt -y dist-upgrade  \
+    && echo "# Install Dumb-init" \
+    && wget https://github.com/Yelp/dumb-init/releases/download/v${DUMBINITVERSION}/dumb-init_${DUMBINITVERSION}_amd64.deb \
+    && dpkg -i dumb-init_${DUMBINITVERSION}_amd64.deb \
+    && apt install -f -y \
     && echo "# Install LemonLDAP::NG repo" \
     && mv lemonldap-ng.list /etc/apt/sources.list.d/ \
     && wget -O - http://lemonldap-ng.org/_media/rpm-gpg-key-ow2 | apt-key add - \
@@ -37,4 +42,4 @@ RUN apt -y update \
 
 EXPOSE 80 443
 VOLUME ["/var/log/apache2", "/etc/apache2", "/etc/lemonldap-ng", "/var/lib/lemonldap-ng/conf", "/var/lib/lemonldap-ng/sessions", "/var/lib/lemonldap-ng/psessions"]
-ENTRYPOINT ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
+ENTRYPOINT ["dumb-init","--","/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
