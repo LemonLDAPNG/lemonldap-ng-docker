@@ -1,0 +1,3 @@
+# LemonLDAP::NG repository
+deb     https://lemonldap-ng.org/deb stable main
+deb-src https://lemonldap-ng.org/deb stable main

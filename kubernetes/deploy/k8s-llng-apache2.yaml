@@ -1,0 +1,59 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+    name: auth
+spec:
+    finalizers:
+        - kubernetes
+status:
+    phase: Active
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: domain
+    namespace: auth
+data:
+    domain: 'example.com'
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+    name: llng
+    namespace: auth
+spec:
+    replicas: 1
+    template:
+        metadata:
+            labels:
+                app: llng
+        spec:
+            containers:
+                - name: k8s-llng-apache2 
+                  imagePullPolicy: "Always"
+                  env:
+                    - name: SSODOMAIN
+                      valueFrom:
+                        configMapKeyRef:
+                            name: llng
+                            key: domain
+                  image: <your registry>/k8s-llng-apache2:v0.0.1
+                  ports:
+                        - name: "http"
+                          containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: llng
+    namespace: auth
+    labels:
+        app: llng
+spec:
+    ports:
+        - name: "http"
+          port: 80
+          protocol: TCP
+          targetPort: 80

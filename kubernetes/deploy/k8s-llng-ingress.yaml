@@ -1,0 +1,29 @@
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+    name: llng
+    namespace: auth
+    labels:
+        app: llng
+spec:
+  rules:
+  - host: auth.example.com
+    http:
+      paths:
+      - backend:
+          serviceName: llng
+          servicePort: 80
+  - host: reload.example.com
+    http:
+      paths:
+      - backend:
+          serviceName: llng
+          servicePort: 80
+  - host: manager.example.com
+    http:
+      paths:
+      - backend:
+          serviceName: llng
+          servicePort: 80
+
