@@ -1,23 +1,4 @@
 ---
-apiVersion: v1
-kind: Namespace
-metadata:
-    name: auth
-spec:
-    finalizers:
-        - kubernetes
-status:
-    phase: Active
-
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-    name: domain
-    namespace: auth
-data:
-    domain: 'example.com'
----
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -31,7 +12,7 @@ spec:
                 app: llng
         spec:
             containers:
-                - name: k8s-llng-apache2 
+                - name: k8s-lln-nginx
                   imagePullPolicy: "Always"
                   env:
                     - name: SSODOMAIN
@@ -39,7 +20,7 @@ spec:
                         configMapKeyRef:
                             name: llng
                             key: domain
-                  image: <your registry>/k8s-llng-apache2:v0.0.1
+                  image: <your registry>/k8s-llng-nginx:v0.0.1
                   ports:
                         - name: "http"
                           containerPort: 80
@@ -50,25 +31,38 @@ spec:
                     - mountPath: /etc/nginx/sites-enabled
                       name: nginxconfenabled
                       readOnly: false
-            volumes:
+                    - mountPath: /var/run/llng-fastcgi-server/llng-fastcgi.sock
+                      name: fastcgisocket
+                      readOnly: false
+                - name: k8s-lln-fastcgi
+                  imagePullPolicy: "Always"
+                  env:
+                    - name: SSODOMAIN
+                      valueFrom:
+                        configMapKeyRef:
+                            name: llng
+                            key: domain
+                  image: <your registry>/k8s-llng-fastcgi:v0.0.1
+                  ports:
+                        - name: "http"
+                          containerPort: 80
+                  volumeMounts:
+                    - mountPath: /etc/nginx/sites-available
+                      name: nginxconfavailable
+                      readOnly: false
+                    - mountPath: /etc/nginx/sites-enabled
+                      name: nginxconfenabled
+                      readOnly: false
+                    - mountPath: /var/run/llng-fastcgi-server/llng-fastcgi.sock
+                      name: fastcgisocket
+                      readOnly: false
+           volumes:
                - name: nginxconfavailable
+                  emptyDir:
+                     medium: Memory
+               - name: fastcgisocket
                   emptyDir:
                      medium: Memory
                - name: nginxconfenabled
                   emptyDir:
                      medium: Memory
----
-apiVersion: v1
-kind: Service
-metadata:
-    name: llng
-    namespace: auth
-    labels:
-        app: llng
-spec:
-    ports:
-        - name: "http"
-          port: 80
-          protocol: TCP
-          targetPort: 80
-
