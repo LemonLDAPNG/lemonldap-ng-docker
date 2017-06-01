@@ -8,7 +8,7 @@ It is the same with classic build :
 
 To deploy your ll::ng on kubernetes, you can modify the namespace(in all yaml) and SSODOMAIN(in k8s-llng-configmap.yaml and k8s-llng-ingress.yaml).
 
-## Choice your container image
+## Choose your container image
 
 You must edit k8s-llng-nginx.yaml or k8s-llng-apache2.yaml with a correct image registry.
 
