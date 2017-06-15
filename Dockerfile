@@ -1,6 +1,3 @@
-# Dockerfile for LemonLDAP::NG
-# Use debian repo of LemonLDAP::NG project
-
 # Start from Debian Jessie
 FROM debian:jessie
 MAINTAINER Clément OUDOT
@@ -8,10 +5,12 @@ LABEL name="llng-apache2" \
       version="v0.0.1"
 
 # Change SSO DOMAIN here
-ENV SSODOMAIN example.com \
-    DUMBINITVERSION 1.2.0
+ENV SSODOMAIN=example.com \
+    DUMBINITVERSION=1.2.0
 
-COPY lemonldap-ng.list /
+EXPOSE 80 443
+
+COPY lemonldap-ng.list docker-entrypoint.sh /
 
 # Update system
 RUN apt -y update \
@@ -31,16 +30,16 @@ RUN apt -y update \
     && echo "# Comment CGIPassAuth directive" \
     && sed -i 's/CGIPassAuth on/#CGIPassAuth on/g' /etc/lemonldap-ng/portal-apache2.conf \
     && echo "# Enable sites" \
-    && a2ensite handler-apache2.conf \ 
+    && a2ensite handler-apache2.conf \
     && a2ensite portal-apache2.conf \
     && a2ensite manager-apache2.conf \
     && a2ensite test-apache2.conf \
     && a2enmod fcgid perl alias rewrite \
     && echo "# Remove cached configuration" \
-    && rm -rf /tmp/lemonldap-ng-config \ 
+    && rm -rf /tmp/lemonldap-ng-config \
     && apt clean \
-    && rm -fr /var/lib/apt/lists/*
+    && rm -fr /var/lib/apt/lists/* \
+    && mkdir /vhosts
 
-EXPOSE 80 443
-VOLUME ["/var/log/apache2", "/etc/apache2", "/etc/lemonldap-ng", "/var/lib/lemonldap-ng/conf", "/var/lib/lemonldap-ng/sessions", "/var/lib/lemonldap-ng/psessions"]
-ENTRYPOINT ["dumb-init","--","/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
+ENTRYPOINT ["dumb-init","--","/docker-entrypoint.sh"]
+CMD "/usr/sbin/apache2ctl" "-D" "FOREGROUND"
