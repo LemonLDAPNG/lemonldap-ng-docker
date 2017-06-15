@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ "$SSODOMAIN" != 'example.com' ]; then
-    echo "Traitement de $SSODOMAIN"
+    echo "Work in progress $SSODOMAIN"
 fi
 
 echo "ServerName $SSODOMAIN" >> /etc/apache2/apache2.conf
