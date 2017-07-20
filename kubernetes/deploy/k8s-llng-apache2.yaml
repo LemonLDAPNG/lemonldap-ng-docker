@@ -1,0 +1,27 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+    name: llng
+    namespace: auth
+spec:
+    replicas: 1
+    template:
+        metadata:
+            labels:
+                app: llng
+        spec:
+            containers:
+                - name: k8s-llng-apache2
+                  imagePullPolicy: "Always"
+                  env:
+                    - name: SSODOMAIN
+                      valueFrom:
+                        configMapKeyRef:
+                            name: llng
+                            key: domain
+                  image: <your registry>/k8s-llng-apache2:v0.0.1
+                  ports:
+                        - name: "http"
+                          containerPort: 80
+
