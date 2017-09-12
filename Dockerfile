@@ -1,5 +1,5 @@
-# Start from Debian Jessie
-FROM debian:jessie
+# Start from Debian Stretch
+FROM debian:stretch
 MAINTAINER Clément OUDOT
 LABEL name="llng-apache2" \
       version="v0.0.1"
@@ -14,7 +14,7 @@ COPY lemonldap-ng.list docker-entrypoint.sh /
 
 # Update system
 RUN apt -y update \
-    && apt -y install wget apt-transport-https \
+    && apt -y install wget apt-transport-https gnupg \
     && apt -y dist-upgrade  \
     && echo "# Install Dumb-init" \
     && wget https://github.com/Yelp/dumb-init/releases/download/v${DUMBINITVERSION}/dumb-init_${DUMBINITVERSION}_amd64.deb \
@@ -22,7 +22,7 @@ RUN apt -y update \
     && apt install -f -y \
     && echo "# Install LemonLDAP::NG repo" \
     && mv lemonldap-ng.list /etc/apt/sources.list.d/ \
-    && wget -O - http://lemonldap-ng.org/_media/rpm-gpg-key-ow2 | apt-key add - \
+    && wget -O - https://lemonldap-ng.org/_media/rpm-gpg-key-ow2 | apt-key add - \
     && apt -y update \
     && echo "# Install LemonLDAP::NG package" \
     && apt -y install apache2 libapache2-mod-perl2 libapache2-mod-fcgid lemonldap-ng lemonldap-ng-fr-doc \
