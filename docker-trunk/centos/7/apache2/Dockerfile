@@ -1,0 +1,37 @@
+# Dockerfile for LemonLDAP::NG
+# Installation of trunk version of LL::NG
+
+# Start from CentOS 7
+FROM centos:7
+MAINTAINER Clément OUDOT
+LABEL name="llng-centos7-apache2-trunk" \
+      version="v0.0.1"
+
+# Change SSO DOMAIN here
+ENV SSODOMAIN example.com
+
+EXPOSE 80 443
+
+COPY docker-entrypoint.sh /
+
+# Update and install
+RUN yum -y update \
+    && yum clean all \
+    && yum -y install epel-release \
+    && yum -y install perl-Apache-Session perl-Authen-Captcha perl-Cache-Cache perl-Clone perl-Config-IniFiles perl-Convert-PEM perl-Crypt-OpenSSL-RSA perl-Crypt-OpenSSL-X509 perl-Crypt-Rijndael perl-Digest-HMAC perl-Digest-SHA perl-Email-Sender perl-GD-SecurityImage perl-HTML-Template perl-IO-String perl-JSON perl-LDAP perl-Mouse perl-Plack perl-Regexp-Assemble perl-Regexp-Common perl-SOAP-Lite perl-String-Random perl-Unicode-String perl-version perl-XML-Simple --enablerepo=epel-testing \
+    && yum -y install perl-Test-Pod perl-Class-Inspector perl-Test-MockObject perl-Env perl-CGI-Session perl-XML-LibXSLT \
+    && yum -y install subversion rpm-build tar which
+
+# Get trunk version of LL::NG
+WORKDIR root
+RUN svn co svn://svn.forge.objectweb.org/svnroot/lemonldap/trunk lemonldap \
+    && cd lemonldap \ 
+    && make rpm-dist \
+    && rpmbuild -ta lemonldap*tar.gz
+
+# Install packages
+RUN yum localinstall -y /root/rpmbuild/RPMS/noarch/*.rpm \
+    && yum clean all
+
+ENTRYPOINT ["dumb-init","--","/docker-entrypoint.sh"]
+CMD "/usr/sbin/apache2ctl" "-D" "FOREGROUND"
