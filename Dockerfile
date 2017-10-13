@@ -39,7 +39,7 @@ RUN apt -y update \
     && rm -fr /var/lib/apt/lists/* \
     && mkdir /vhosts
 
-VOLUME /var/lib/lemonldap-ng
+VOLUME /var/lib/lemonldap-ng/conf
 
 ENTRYPOINT ["dumb-init","--","/docker-entrypoint.sh"]
 CMD "/usr/sbin/apache2ctl" "-D" "FOREGROUND"
