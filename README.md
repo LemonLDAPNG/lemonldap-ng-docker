@@ -16,7 +16,7 @@ The image will run LemonLDAP::NG in demo mode (see http://lemonldap-ng.org/docum
 
 Add auth.example.com/manager.example.com/test1.example.com/test2.example.com to /etc/hosts on the host
 
-    sudo echo "127.0.0.1 auth.example.com manager.example.com test1.example.com test2.example.com" >> /etc/hosts
+    echo "127.0.0.1 auth.example.com manager.example.com test1.example.com test2.example.com" | sudo tee -a /etc/hosts
 
 Map the container port 80 to host port 80 (option -p) and add reload.example.com to /etc/hosts in the container (option --add-host)
 
