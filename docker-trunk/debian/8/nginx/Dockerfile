@@ -32,14 +32,14 @@ RUN apt-get -y update \
 	libtest-mockobject-perl libauthen-captcha-perl libnet-openid-consumer-perl \
 	libnet-openid-server-perl libunicode-string-perl libconvert-pem-perl \
 	libmouse-perl libplack-perl libglib-perl liblasso-perl yui-compressor dh-systemd \
-	vim subversion make devscripts libdbd-sqlite3-perl libemail-sender-perl \
+	vim git make devscripts libdbd-sqlite3-perl libemail-sender-perl \
         libgd-securityimage-perl libimage-magick-perl apache2 \
     && rm -rf /var/lib/apt/lists/* \
     && echo "# Get trunk version of LL::NG" \
     && cd /root \
-    && svn co svn://svn.forge.objectweb.org/svnroot/lemonldap/trunk lemonldap \
+    && git clone https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng.git \
     && echo "# Install LL::NG" \
-    && cd lemonldap \
+    && cd lemonldap-ng \
     && make debian-install-for-nginx \
     && rm -rf /tmp/*lemonldap* /root/lemonldap/* \
     && mv /etc.supervisor.conf.d.supervisord.conf /etc/supervisor/conf.d/supervisord.conf \

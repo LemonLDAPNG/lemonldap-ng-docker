@@ -29,10 +29,10 @@ RUN apt -y update \
         libglib-perl liblasso-perl yui-compressor dh-systemd libdbd-sqlite3-perl \
         libemail-sender-perl libgd-securityimage-perl libimage-magick-perl \
     && apt-get -y install vim \
-    && apt-get -y install subversion make devscripts \
+    && apt-get -y install git make devscripts \
     && cd /root \
-    && svn co svn://svn.forge.objectweb.org/svnroot/lemonldap/trunk lemonldap \
-    && cd lemonldap \
+    && git clone https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng.git \
+    && cd lemonldap-ng \
     && make debian-install-for-apache \
     && sed -i "s/example\.com/${SSODOMAIN}/g" /etc/lemonldap-ng/*  /var/lib/lemonldap-ng/test/index.pl \
     && echo "/var/lib/lemonldap-ng/conf/lmConf-1.js" \
