@@ -22,12 +22,12 @@ RUN yum -y update \
     && yum -y install epel-release \
     && yum -y install perl-Apache-Session perl-Authen-Captcha perl-Cache-Cache perl-Clone perl-Config-IniFiles perl-Convert-PEM perl-Crypt-OpenSSL-RSA perl-Crypt-OpenSSL-X509 perl-Crypt-Rijndael perl-Digest-HMAC perl-Digest-SHA perl-Email-Sender perl-GD-SecurityImage perl-HTML-Template perl-IO-String perl-JSON perl-LDAP perl-Mouse perl-Plack perl-Regexp-Assemble perl-Regexp-Common perl-SOAP-Lite perl-String-Random perl-Unicode-String perl-version perl-XML-Simple --enablerepo=epel-testing \
     && yum -y install perl-Test-Pod perl-Class-Inspector perl-Test-MockObject perl-Env perl-XML-LibXSLT \
-    && yum -y install subversion rpm-build tar which
+    && yum -y install git rpm-build tar which
 
 # Get trunk version of LL::NG
 WORKDIR root
-RUN svn co svn://svn.forge.objectweb.org/svnroot/lemonldap/trunk lemonldap \
-    && cd lemonldap \ 
+RUN git clone https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng.git \
+    && cd lemonldap-ng \
     && make rpm-dist \
     && rpmbuild -ta lemonldap*tar.gz
 
