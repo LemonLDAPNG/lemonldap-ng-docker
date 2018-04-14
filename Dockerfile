@@ -15,7 +15,7 @@ COPY lemonldap-ng.list docker-entrypoint.sh /
 
 # Update system
 RUN apt-get -y update \
-    && apt-get -y install wget apt-transport-https gnupg \
+    && apt-get -y install wget apt-transport-https gnupg liblasso-perl \
     && apt-get -y dist-upgrade  \
     && echo "# Install Dumb-init" \
     && wget https://github.com/Yelp/dumb-init/releases/download/v${DUMBINITVERSION}/dumb-init_${DUMBINITVERSION}_amd64.deb \
