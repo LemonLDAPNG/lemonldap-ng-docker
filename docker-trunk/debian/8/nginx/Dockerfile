@@ -33,7 +33,7 @@ RUN apt-get -y update \
 	libnet-openid-server-perl libunicode-string-perl libconvert-pem-perl \
 	libmouse-perl libplack-perl libglib-perl liblasso-perl yui-compressor dh-systemd \
 	vim git make devscripts libdbd-sqlite3-perl libemail-sender-perl \
-        libgd-securityimage-perl libimage-magick-perl apache2 \
+        libgd-securityimage-perl libimage-magick-perl \
     && rm -rf /var/lib/apt/lists/* \
     && echo "# Get trunk version of LL::NG" \
     && cd /root \
