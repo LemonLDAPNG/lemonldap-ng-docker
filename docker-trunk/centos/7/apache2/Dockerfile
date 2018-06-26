@@ -37,4 +37,3 @@ RUN yum localinstall -y /root/rpmbuild/RPMS/noarch/*.rpm \
     && rpm -Uvh --force /root/rpmbuild/RPMS/noarch/lemonldap-ng-doc*rpm
 
 ENTRYPOINT ["/usr/local/bin/dumb-init","--","/docker-entrypoint.sh"]
-CMD "/usr/sbin/apachectl" "-D" "FOREGROUND"
