@@ -34,7 +34,8 @@ RUN apt-get -y update \
     && a2ensite portal-apache2.conf \
     && a2ensite manager-apache2.conf \
     && a2ensite test-apache2.conf \
-    && a2enmod fcgid perl alias rewrite \
+    && a2dismod mpm_event \
+    && a2enmod fcgid perl alias rewrite headers mpm_prefork \
     && echo "# Remove cached configuration" \
     && rm -rf /tmp/lemonldap-ng-config \
     && rm -fr /var/lib/apt/lists/* \
