@@ -14,7 +14,8 @@ ENV  DUMBINITVERSION 1.2.0
 COPY etc.supervisor.conf.d.supervisord.conf /
 
 # Update system and install LL::NG dependencies
-RUN apt-get -y update \
+RUN echo "deb http://ftp.debian.org/debian jessie-backports main" > /etc/apt/sources.list.d/jessie-backports.list \
+    && apt-get -y update \
     && apt -y install wget apt-transport-https \
     && apt -y dist-upgrade  \
     && echo "# Install Dumb-init" \
@@ -33,7 +34,8 @@ RUN apt-get -y update \
 	libnet-openid-server-perl libunicode-string-perl libconvert-pem-perl \
 	libmouse-perl libplack-perl libglib-perl liblasso-perl yui-compressor dh-systemd \
 	vim git make devscripts libdbd-sqlite3-perl libemail-sender-perl \
-        libgd-securityimage-perl libimage-magick-perl \
+	libgd-securityimage-perl libimage-magick-perl libconvert-base32-perl \
+	&& apt-get install -y -t jessie-backports debhelper \
     && rm -rf /var/lib/apt/lists/* \
     && echo "# Get trunk version of LL::NG" \
     && cd /root \
@@ -58,8 +60,11 @@ RUN apt-get -y update \
     && perl -i -pe 's/#// if(/nginx-lua-headers/)' /etc/lemonldap-ng/test-nginx.conf \
     && perl -i -pe 's/#// if(/access\.log/)' /etc/lemonldap-ng/handler-nginx.conf \
     && echo "# No daemon" \
-    && echo "\ndaemon off;" >> /etc/nginx/nginx.conf
+    && echo "\ndaemon off;" >> /etc/nginx/nginx.conf \
+	&& echo "# Create run directory for llng-fastcgi-server" \
+	&& mkdir -p /var/run/llng-fastcgi-server/ \
+	&& chown www-data:www-data /var/run/llng-fastcgi-server/
 
 EXPOSE 80 443
 VOLUME ["/var/log/nginx", "/etc/lemonldap-ng", "/var/lib/lemonldap-ng/conf", "/var/lib/lemonldap-ng/sessions", "/var/lib/lemonldap-ng/psessions"]
-ENTRYPOINT ["dumb-init","--","/usr/bin/supervisord"]
+ENTRYPOINT ["dumb-init","--","/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

@@ -34,8 +34,6 @@ RUN git clone https://gitlab.ow2.org/lemonldap-ng/lemonldap-ng.git \
 # Install packages
 RUN yum localinstall -y /root/rpmbuild/RPMS/noarch/*.rpm \
     && yum clean all \
-    && rpm -Uvh --force /root/rpmbuild/RPMS/noarch/lemonldap-ng-doc*rpm \
-    && rpm -Uvh --force /root/rpmbuild/RPMS/noarch/lemonldap-ng-fr-doc*rpm
+    && rpm -Uvh --force /root/rpmbuild/RPMS/noarch/lemonldap-ng-doc*rpm
 
 ENTRYPOINT ["/usr/local/bin/dumb-init","--","/docker-entrypoint.sh"]
-CMD "/usr/sbin/apachectl" "-D" "FOREGROUND"
