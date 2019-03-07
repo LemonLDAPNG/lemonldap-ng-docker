@@ -1,47 +1,37 @@
-# Start from Debian Stretch
 FROM debian:stretch
 MAINTAINER Clément OUDOT
-LABEL name="llng-apache2" \
-      version="v0.0.1"
+LABEL name="lemonldap-ng-nginx" \
+      version="v2.0"
 
-# Change SSO DOMAIN here
 ENV SSODOMAIN=example.com \
-    DUMBINITVERSION=1.2.0 \
+    LOGLEVEL=info \
     DEBIAN_FRONTEND=noninteractive
 
-EXPOSE 80 443
+EXPOSE 80
 
-COPY lemonldap-ng.list docker-entrypoint.sh /
+RUN echo "# Install LemonLDAP::NG source repo" && \
+    apt-get -y update && \
+    apt-get -y install wget apt-transport-https gnupg dumb-init && \
+    wget -O - https://lemonldap-ng.org/_media/rpm-gpg-key-ow2 | apt-key add - && \
+    echo "deb https://lemonldap-ng.org/deb 2.0 main" >/etc/apt/sources.list.d/lemonldap-ng.list
 
-# Update system
-RUN apt-get -y update \
-    && apt-get -y install wget apt-transport-https gnupg liblasso-perl \
-    && apt-get -y dist-upgrade  \
-    && echo "# Install Dumb-init" \
-    && wget https://github.com/Yelp/dumb-init/releases/download/v${DUMBINITVERSION}/dumb-init_${DUMBINITVERSION}_amd64.deb \
-    && dpkg -i dumb-init_${DUMBINITVERSION}_amd64.deb \
-    && apt-get install -f -y \
-    && echo "# Install LemonLDAP::NG repo" \
-    && mv lemonldap-ng.list /etc/apt/sources.list.d/ \
-    && wget -O - https://lemonldap-ng.org/_media/rpm-gpg-key-ow2 | apt-key add - \
-    && apt-get -y update \
-    && echo "# Install LemonLDAP::NG package" \
-    && apt-get -y install apache2 libapache2-mod-perl2 libapache2-mod-fcgid lemonldap-ng lemonldap-ng-fr-doc \
-    && echo "# Change SSO Domain" \
-    && sed -i "s/example\.com/${SSODOMAIN}/g" /etc/lemonldap-ng/* /var/lib/lemonldap-ng/conf/lmConf-1.js /var/lib/lemonldap-ng/test/index.pl \
-    && echo "# Enable sites" \
-    && a2ensite handler-apache2.conf \
-    && a2ensite portal-apache2.conf \
-    && a2ensite manager-apache2.conf \
-    && a2ensite test-apache2.conf \
-    && a2dismod mpm_event \
-    && a2enmod fcgid perl alias rewrite headers mpm_prefork \
-    && echo "# Remove cached configuration" \
-    && rm -rf /tmp/lemonldap-ng-config \
-    && rm -fr /var/lib/apt/lists/* \
-    && mkdir /vhosts
+RUN apt-get -y update && \
+    echo "# Install LemonLDAP::NG packages" && \
+    apt-get -y install nginx lemonldap-ng cron anacron liblasso-perl libio-string-perl && \
+    echo "\ndaemon off;" >> /etc/nginx/nginx.conf
 
-VOLUME /var/lib/lemonldap-ng/conf
+COPY docker-entrypoint.sh /
 
-ENTRYPOINT ["dumb-init","--","/docker-entrypoint.sh"]
-CMD "/usr/sbin/apache2ctl" "-D" "FOREGROUND"
+RUN echo "# Install nginx configuration files" && \
+    cd /etc/nginx/sites-enabled/ && \
+    ln -s ../../lemonldap-ng/handler-nginx.conf && \
+    ln -s ../../lemonldap-ng/portal-nginx.conf && \
+    ln -s ../../lemonldap-ng/manager-nginx.conf && \
+    ln -s ../../lemonldap-ng/test-nginx.conf
+
+
+RUN echo "# Configure nginx to log to standard streams" && \
+    ln -sf /dev/stdout /var/log/nginx/access.log && \
+    ln -sf /dev/stderr /var/log/nginx/error.log
+
+ENTRYPOINT ["dumb-init","--","/bin/sh", "/docker-entrypoint.sh"]
