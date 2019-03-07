@@ -1,17 +1,18 @@
-#!/bin/bash
+#!/bin/sh
+service cron start
+service anacron start
+sed -i "s/example\.com/${SSODOMAIN}/" /etc/lemonldap-ng/* /var/lib/lemonldap-ng/conf/lmConf-1.json
 
-if [ "$SSODOMAIN" != 'example.com' ]; then
-    echo "Work in progress $SSODOMAIN"
-fi
+sed -i -e "s/^logLevel.*/logLevel=${LOGLEVEL}\nlogger     = Lemonldap::NG::Common::Logger::Std/" /etc/lemonldap-ng/lemonldap-ng.ini
+sed -i -e 's/^;checkTime.*/checkTime = 1/' /etc/lemonldap-ng/lemonldap-ng.ini
 
-echo "ServerName $SSODOMAIN" >> /etc/apache2/apache2.conf
+# Run the fastcgi server withing this session so that we can get logs in 
+# STDOUT/STDERR
+. /etc/default/lemonldap-ng-fastcgi-server
+export SOCKET PID USER GROUP
 
-sed -i "s/example\.com/${SSODOMAIN}/g" /etc/lemonldap-ng/* \
-    /var/lib/lemonldap-ng/conf/lmConf-1.js* /var/lib/lemonldap-ng/test/index.pl
+mkdir "$(dirname $SOCKET)"
+chown www-data "$(dirname $SOCKET)"
+/usr/sbin/llng-fastcgi-server --foreground&
 
-find /etc/apache2/sites-available/ -name '*.conf' ! -name '000-default.conf' \
-     -exec ln -sf {} /etc/apache2/sites-enabled/ \;
-find /vhosts/ -name '*.conf' \
-     -exec ln -sf {} /etc/apache2/sites-enabled/ \;
-
-exec "$@"
+nginx
