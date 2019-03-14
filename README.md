@@ -28,10 +28,15 @@ You may use the following environment variables to configure the container
 
 * `SSODOMAIN`: change the default `example.com` domain with something else
 * `LOGLEVEL`: Set LLNG verbosity (for `docker logs`). Possible values: `error`, `warn`, `notice`, `info`, `debug`
+* `FASTCGI_LISTEN_PORT`: Listen on a port instead of using a UNIX socket. If you use this variable, you will probably want to map this port on your host.
 
 Example:
 
     docker run -d -e SSODOMAIN=test.local -e LOGLEVEL=debug -p 80:80 yourname/lemonldap-ng:version
+
+Or
+
+    docker run -d  -e SSODOMAIN=test.local -e LOGLEVEL=debug -e FASTCGI_LISTEN_PORT=9000 -p 80:80 -p 9000:9000 yourname/lemonldap-ng:version
 
 Don't forget to modify your `/etc/hosts` accordingly
 
