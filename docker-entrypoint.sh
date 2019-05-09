@@ -20,7 +20,12 @@ fi
 
 sed -i "s/example\.com/${SSODOMAIN}/" /etc/lemonldap-ng/* /var/lib/lemonldap-ng/conf/lmConf-1.json
 
-sed -i -e "s/^logLevel.*/logLevel=${LOGLEVEL}\nlogger     = Lemonldap::NG::Common::Logger::Std/" /etc/lemonldap-ng/lemonldap-ng.ini
+# Logging options
+sed -i -e "s/^logLevel.*/logLevel=${LOGLEVEL}/" /etc/lemonldap-ng/lemonldap-ng.ini
+if ! grep -q '^logger' /etc/lemonldap-ng/lemonldap-ng.ini ; then
+    sed -i -e '/^logLevel/alogger = Lemonldap::NG::Common::Logger::Std' /etc/lemonldap-ng/lemonldap-ng.ini
+fi
+
 sed -i -e 's/^;checkTime.*/checkTime = 1/' /etc/lemonldap-ng/lemonldap-ng.ini
 
 if [ ! -z ${FASTCGI_LISTEN_PORT+x} ]; then
@@ -39,7 +44,7 @@ fi
 export SOCKET LISTEN PID USER GROUP
 
 if [ ! -z ${SOCKET+x} ]; then
-    mkdir "$(dirname $SOCKET)"
+    mkdir -p "$(dirname $SOCKET)"
     chown www-data "$(dirname $SOCKET)"
 fi
 
