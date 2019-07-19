@@ -36,4 +36,6 @@ RUN echo "# Configure nginx to log to standard streams" && \
     ln -sf /dev/stdout /var/log/nginx/access.log && \
     ln -sf /dev/stderr /var/log/nginx/error.log
 
+VOLUME ["/var/lib/lemonldap-ng/conf", "/var/lib/lemonldap-ng/sessions", "/var/lib/lemonldap-ng/psessions"]
+
 ENTRYPOINT ["dumb-init","--","/bin/sh", "/docker-entrypoint.sh"]
