@@ -6,7 +6,7 @@ for PRESERVEFILE in ${PRESERVEFILES} ;
 do
     if [ ! "$(ls -A ${PRESERVEFILE} &>/dev/null)" ]; then
         echo "# Restore ${PRESERVEFILE} directory"
-        cp -r ${PRESERVEFILE}-orig/* ${PRESERVEFILE}/
+        cp -a ${PRESERVEFILE}-orig/* ${PRESERVEFILE}/
     fi
 done
 
