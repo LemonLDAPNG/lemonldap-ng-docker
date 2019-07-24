@@ -24,6 +24,12 @@ RUN apt-get -y update && \
 
 COPY docker-entrypoint.sh /
 
+RUN echo '# Copy orignal configuration' && \
+    cp -r /etc/lemonldap-ng /etc/lemonldap-ng-orig && \
+    cp -r /var/lib/lemonldap-ng/conf /var/lib/lemonldap-ng/conf-orig && \
+    cp -r /var/lib/lemonldap-ng/sessions /var/lib/lemonldap-ng/sessions-orig && \
+    cp -r /var/lib/lemonldap-ng/psessions /var/lib/lemonldap-ng/psessions-orig
+
 RUN echo "# Install nginx configuration files" && \
     cd /etc/nginx/sites-enabled/ && \
     ln -s ../../lemonldap-ng/handler-nginx.conf && \
@@ -36,6 +42,6 @@ RUN echo "# Configure nginx to log to standard streams" && \
     ln -sf /dev/stdout /var/log/nginx/access.log && \
     ln -sf /dev/stderr /var/log/nginx/error.log
 
-VOLUME ["/var/lib/lemonldap-ng/conf", "/var/lib/lemonldap-ng/sessions", "/var/lib/lemonldap-ng/psessions"]
+VOLUME ["/etc/lemonldap-ng","/var/lib/lemonldap-ng/conf", "/var/lib/lemonldap-ng/sessions", "/var/lib/lemonldap-ng/psessions"]
 
 ENTRYPOINT ["dumb-init","--","/bin/sh", "/docker-entrypoint.sh"]

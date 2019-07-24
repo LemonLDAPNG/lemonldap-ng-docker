@@ -2,6 +2,14 @@
 service cron start
 service anacron start
 
+for PRESERVEFILE in ${PRESERVEFILES} ;
+do
+    if [ ! "$(ls -A ${PRESERVEFILE} &>/dev/null)" ]; then
+        echo "# Restore ${PRESERVEFILE} directory"
+        cp -r ${PRESERVEFILE}-orig/* ${PRESERVEFILE}/
+    fi
+done
+
 if [ ! -z ${PORTAL_HOSTNAME+x} ]; then
     sed -i -e "s/auth.example.com/${PORTAL_HOSTNAME}/g" /etc/lemonldap-ng/* /var/lib/lemonldap-ng/conf/lmConf-1.json
 fi
