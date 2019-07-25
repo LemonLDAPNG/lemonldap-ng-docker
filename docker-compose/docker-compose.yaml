@@ -3,7 +3,7 @@ services:
   fastcgi:
     image: k8s-llng-fastcgi
     volumes:
-      - dataenabled:/var/run/mysqld
+      - dataavailable:/etc/nginx/sites-available
       - dataenabled:/etc/nginx/sites-enabled
       - fastcgisocket:/var/run/llng-fastcgi-server/llng-fastcgi.sock
   nginx:
