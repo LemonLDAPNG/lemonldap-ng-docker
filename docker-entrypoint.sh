@@ -6,6 +6,7 @@ for PRESERVEFILE in ${PRESERVEFILES} ;
 do
     if [ ! "$(ls -A ${PRESERVEFILE} &>/dev/null)" ]; then
         echo "# Restore ${PRESERVEFILE} directory"
+        chown -R www-data:www-data ${PRESERVEFILE}
         cp -a ${PRESERVEFILE}-orig/* ${PRESERVEFILE}/
     fi
 done
