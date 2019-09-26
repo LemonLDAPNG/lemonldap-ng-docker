@@ -47,6 +47,9 @@ if [ ! -z ${FASTCGI_LISTEN_PORT+x} ]; then
 
     # Update NGinx configuration from UNIX socket to TCP socket
     sed -i -e "s|fastcgi_pass unix:/var/run/llng-fastcgi-server/llng-fastcgi.sock|fastcgi_pass 0.0.0.0:$FASTCGI_LISTEN_PORT|" /etc/lemonldap-ng/*-nginx.conf
+
+	# Update upstream llng fastcgi to tcpsocket
+    sed -i -e "s|unix:/var/run/llng-fastcgi-server/llng-fastcgi.sock|0.0.0.0:$FASTCGI_LISTEN_PORT|" /etc/lemonldap-ng/portal-nginx.conf
 fi
 
 . /etc/default/lemonldap-ng-fastcgi-server
