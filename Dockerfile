@@ -1,4 +1,4 @@
-FROM debian:stretch
+FROM debian:stable
 MAINTAINER Clément OUDOT
 LABEL name="lemonldap-ng-nginx" \
       version="v2.0"
