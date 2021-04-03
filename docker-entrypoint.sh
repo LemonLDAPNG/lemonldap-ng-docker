@@ -27,6 +27,11 @@ if [ ! -z ${TEST2_HOSTNAME+x} ]; then
     sed -i -e "s/test2.example.com/${TEST2_HOSTNAME}/g" /etc/lemonldap-ng/* /var/lib/lemonldap-ng/conf/lmConf-1.json
 fi
 
+if [ ! -z ${PROXY_RANGE+x} ]; then
+    sed -i -e "s#.*set_real_ip_from.*#  set_real_ip_from ${PROXY_RANGE};#g" /etc/lemonldap-ng/*
+    sed -i -e "s#.*real_ip_header.*#  real_ip_header    X-Forwarded-For;#g" /etc/lemonldap-ng/*
+fi
+
 sed -i "s/example\.com/${SSODOMAIN}/" /etc/lemonldap-ng/* /var/lib/lemonldap-ng/conf/lmConf-1.json
 
 # Logging options
