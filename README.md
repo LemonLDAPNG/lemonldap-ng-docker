@@ -29,6 +29,7 @@ You may use the following environment variables to configure the container
 * `SSODOMAIN`: change the default `example.com` domain with something else
 * `LOGLEVEL`: Set LLNG verbosity (for `docker logs`). Possible values: `error`, `warn`, `notice`, `info`, `debug`
 * `FASTCGI_LISTEN_PORT`: Listen on a port instead of using a UNIX socket. If you use this variable, you will probably want to map this port on your host.
+* `PROXY_RANGE`: if LLNG is running behind a reverse proxy, change the nginx configurations for `set_real_ip_from`. `PROXY_RANGE` will be the IP range of your proxy. ex: `172.0.0.0/8`
 
 You can also finely set the hostnames for each site
 
