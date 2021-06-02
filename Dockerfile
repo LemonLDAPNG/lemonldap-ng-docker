@@ -47,7 +47,7 @@ RUN echo '# Copy orignal configuration' && \
     cp -a /var/lib/lemonldap-ng/psessions /var/lib/lemonldap-ng/psessions-orig
 
 RUN echo "# Install nginx configuration files" && \
-    cd /etc/nginx/conf.d/ &&\
+    cd /etc/nginx/conf.d/ && \
     ln -s ../../lemonldap-ng/handler-nginx.conf && \
     ln -s ../../lemonldap-ng/portal-nginx.conf && \
     ln -s ../../lemonldap-ng/manager-nginx.conf && \
