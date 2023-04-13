@@ -15,11 +15,16 @@ RUN echo "# Install LemonLDAP::NG source repo" && \
     wget -O - https://lemonldap-ng.org/_media/rpm-gpg-key-ow2 | apt-key add - && \
     echo "deb https://lemonldap-ng.org/deb 2.0 main" >/etc/apt/sources.list.d/lemonldap-ng.list
 
+RUN echo "# Enable Debian backports" && \
+    echo "deb http://deb.debian.org/debian bullseye-backports main" > /etc/apt/sources.list.d/backports.list
+
 RUN apt-get -y update && \
     echo "# Install LemonLDAP::NG packages" && \
     apt-get -y install nginx lemonldap-ng cron anacron liblasso-perl libio-string-perl && \
     echo "# Install LemonLDAP::NG TOTP requirements" && \
     apt-get -y install libconvert-base32-perl libdigest-hmac-perl && \
+    echo "# Install LemonLDAP::NG WebAuthn requirements" && \
+    apt-get -y install libauthen-webauthn-perl && \
     echo "# Install some DB drivers" && \
     apt-get -y install libdbd-mysql-perl libdbd-pg-perl && \
     echo "\ndaemon off;" >> /etc/nginx/nginx.conf
