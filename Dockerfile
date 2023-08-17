@@ -1,7 +1,7 @@
-FROM debian:stable
-MAINTAINER Clément OUDOT
-LABEL name="lemonldap-ng-nginx" \
-      version="v2.0"
+FROM debian:stable-slim
+LABEL   org.opencontainers.image.authors="Clément OUDOT" \
+        name="lemonldap-ng-nginx" \
+        version="v2.0"
 
 ENV SSODOMAIN=example.com \
     LOGLEVEL=info \
