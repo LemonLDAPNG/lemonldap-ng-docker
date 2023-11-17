@@ -27,6 +27,8 @@ RUN apt-get -y update && \
     apt-get -y install libauthen-webauthn-perl && \
     echo "# Install some DB drivers" && \
     apt-get -y install libdbd-mysql-perl libdbd-pg-perl && \
+    echo "# Install LDAP backend requirements" && \
+    apt-get -y install libapache-session-ldap-perl && \
     echo "\ndaemon off;" >> /etc/nginx/nginx.conf
 
 COPY docker-entrypoint.sh /
