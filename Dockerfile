@@ -9,6 +9,10 @@ ENV SSODOMAIN=example.com \
 
 EXPOSE 80
 
+# Keep documentation files for Lemonldap that are normally removed by the
+# debian-slim image
+COPY lemonldap.dpkg.cfg /etc/dpkg/dpkg.cfg.d/lemonldap
+
 RUN echo "# Install LemonLDAP::NG source repo" && \
     apt-get -y update && \
     apt-get -y install wget apt-transport-https gnupg dumb-init && \
