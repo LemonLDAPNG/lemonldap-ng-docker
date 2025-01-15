@@ -2,6 +2,8 @@
 service cron start
 service anacron start
 
+PRESERVEFILES="/etc/lemonldap-ng /var/lib/lemonldap-ng/conf /var/lib/lemonldap-ng/sessions /var/lib/lemonldap-ng/psessions /usr/share/lemonldap-ng /usr/share/perl5/Lemonldap/NG/Portal/Plugins /usr/share/perl5/Lemonldap/NG/Portal/Register"
+
 for PRESERVEFILE in ${PRESERVEFILES} ;
 do
     if [ ! "$(ls -A ${PRESERVEFILE} &>/dev/null)" ]; then
