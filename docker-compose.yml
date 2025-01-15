@@ -1,0 +1,21 @@
+services:
+  lemonldap-ng:
+    container_name: lemonldap-ng
+    image: yourname/lemonldap-ng:version
+    environment:
+      SSODOMAIN: example.com
+      LOGLEVEL: debug
+      PUID: 1000
+      PGID: 1000
+      TZ: Europe/Paris
+    ports:
+      - 80:80
+    volumes:
+      - ./llng/etc:/etc/lemonldap-ng
+      - ./llng/var-conf:/var/lib/lemonldap-ng/conf
+      - ./llng/var-sessions:/var/lib/lemonldap-ng/sessions
+      - ./llng/var-psessions:/var/lib/lemonldap-ng/psessions
+      - ./llng/theme:/usr/share/lemonldap-ng
+      - ./llng/plugins:/usr/share/perl5/Lemonldap/NG/Portal/Plugins
+      - ./llng/register:/usr/share/perl5/Lemonldap/NG/Portal/Register
+    restart: unless-stopped
