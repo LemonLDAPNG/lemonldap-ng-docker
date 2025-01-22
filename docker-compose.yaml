@@ -7,11 +7,11 @@ services:
       PGID: 1000
       TZ: Europe/Paris
       SSODOMAIN: example.com
-      PORTAL_HOSTNAME: myportal.example.com
-      MANAGER_HOSTNAME: mymanager.example.com
-      HANDLER_HOSTNAME: myhandler.example.com
-      TEST1_HOSTNAME: mytest1.example.com
-      TEST2_HOSTNAME: mytest2.example.com
+      PORTAL_HOSTNAME: portal.example.com
+      MANAGER_HOSTNAME: manager.example.com
+      HANDLER_HOSTNAME: handler.example.com
+      TEST1_HOSTNAME: test1.example.com
+      TEST2_HOSTNAME: test2.example.com
       LOGLEVEL: debug
       FASTCGI_LISTEN_PORT: 9000
       PRESERVEFILES: /etc/lemonldap-ng /var/lib/lemonldap-ng/conf /var/lib/lemonldap-ng/sessions /var/lib/lemonldap-ng/psessions

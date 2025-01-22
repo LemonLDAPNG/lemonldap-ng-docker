@@ -65,11 +65,11 @@ Or
 
     docker run -d \
         -e SSODOMAIN=example.com \
-        -e PORTAL_HOSTNAME=myportal.example.com \
-        -e MANAGER_HOSTNAME=mymanager.example.com \
-        -e HANDLER_HOSTNAME=myhandler.example.com \
-        -e TEST1_HOSTNAME=mytest1.example.com \
-        -e TEST2_HOSTNAME=mytest2.example.com \
+        -e PORTAL_HOSTNAME=portal.example.com \
+        -e MANAGER_HOSTNAME=manager.example.com \
+        -e HANDLER_HOSTNAME=handler.example.com \
+        -e TEST1_HOSTNAME=test1.example.com \
+        -e TEST2_HOSTNAME=test2.example.com \
         -e PRESERVEFILES=/etc/lemonldap-ng /var/lib/lemonldap-ng/conf /var/lib/lemonldap-ng/sessions /var/lib/lemonldap-ng/psessions \
         -e LOGLEVEL=debug \
         -e FASTCGI_LISTEN_PORT=9000 \
