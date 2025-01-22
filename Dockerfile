@@ -39,10 +39,7 @@ RUN echo '# Copy orignal configuration' && \
     cp -a /etc/lemonldap-ng /etc/lemonldap-ng-orig && \
     cp -a /var/lib/lemonldap-ng/conf /var/lib/lemonldap-ng/conf-orig && \
     cp -a /var/lib/lemonldap-ng/sessions /var/lib/lemonldap-ng/sessions-orig && \
-    cp -a /var/lib/lemonldap-ng/psessions /var/lib/lemonldap-ng/psessions-orig && \
-    cp -a /usr/share/lemonldap-ng /usr/share/lemonldap-ng-orig && \
-    cp -a /usr/share/perl5/Lemonldap/NG/Portal/Plugins /usr/share/perl5/Lemonldap/NG/Portal/Plugins-orig && \
-    cp -a /usr/share/perl5/Lemonldap/NG/Portal/Register /usr/share/perl5/Lemonldap/NG/Portal/Register-orig
+    cp -a /var/lib/lemonldap-ng/psessions /var/lib/lemonldap-ng/psessions-orig
 
 RUN echo "# Install nginx configuration files" && \
     cd /etc/nginx/sites-enabled/ && \
