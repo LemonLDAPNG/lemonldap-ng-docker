@@ -28,4 +28,6 @@ services:
       - ./llng/register:/usr/share/perl5/Lemonldap/NG/Portal/Register/CustomRegister
       - ./llng/userdb:/usr/share/perl5/Lemonldap/NG/Portal/UserDB/CustomUserdb
       - ./llng/auth:/usr/share/perl5/Lemonldap/NG/Portal/Auth/CustomAuth
+      - ./llng/captcha:/usr/share/perl5/Lemonldap/NG/Portal/Captcha/CustomCaptcha
+      - ./llng/menutab:/usr/share/perl5/Lemonldap/NG/Portal/MenuTab/CustomMenuTab
     restart: unless-stopped

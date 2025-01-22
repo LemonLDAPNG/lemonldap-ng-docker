@@ -85,8 +85,8 @@ Or
         -v ./llng/register:/usr/share/perl5/Lemonldap/NG/Portal/Register/CustomRegister \
         -v ./llng/userdb:/usr/share/perl5/Lemonldap/NG/Portal/UserDB/CustomUserdb \
         -v ./llng/auth:/usr/share/perl5/Lemonldap/NG/Portal/Auth/CustomAuth \
-        -v ./llng/auth:/usr/share/perl5/Lemonldap/NG/Portal/Captcha/CustomCaptcha \
-        -v ./llng/auth:/usr/share/perl5/Lemonldap/NG/Portal/MenuTab/CustomMenuTab \
+        -v ./llng/captcha:/usr/share/perl5/Lemonldap/NG/Portal/Captcha/CustomCaptcha \
+        -v ./llng/menutab:/usr/share/perl5/Lemonldap/NG/Portal/MenuTab/CustomMenuTab \
         yourname/lemonldap-ng:version
 
 Don't forget to modify your `/etc/hosts` accordingly
