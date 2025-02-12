@@ -42,12 +42,10 @@ RUN echo '# Copy orignal configuration' && \
     cp -a /var/lib/lemonldap-ng/psessions /var/lib/lemonldap-ng/psessions-orig
 
 RUN echo "# Install nginx configuration files" && \
-    cd /etc/nginx/sites-enabled/ && \
-    ln -s ../../lemonldap-ng/handler-nginx.conf && \
-    ln -s ../../lemonldap-ng/portal-nginx.conf && \
-    ln -s ../../lemonldap-ng/manager-nginx.conf && \
-    ln -s ../../lemonldap-ng/test-nginx.conf
-
+    ln -s /etc/lemonldap-ng/handler-nginx.conf /etc/nginx/sites-enabled/ && \
+    ln -s /etc/lemonldap-ng/portal-nginx.conf /etc/nginx/sites-enabled/ && \
+    ln -s /etc/lemonldap-ng/manager-nginx.conf /etc/nginx/sites-enabled/  && \
+    ln -s /etc/lemonldap-ng/test-nginx.conf /etc/nginx/sites-enabled/
 
 RUN echo "# Configure nginx to log to standard streams" && \
     ln -sf /dev/stdout /var/log/nginx/access.log && \

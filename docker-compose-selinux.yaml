@@ -1,0 +1,35 @@
+services:
+  lemonldap-ng:
+    container_name: lemonldap-ng
+    image: yourname/lemonldap-ng:version
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: Europe/Paris
+      SSODOMAIN: example.com
+      PORTAL_HOSTNAME: portal.example.com
+      MANAGER_HOSTNAME: manager.example.com
+      HANDLER_HOSTNAME: handler.example.com
+      TEST1_HOSTNAME: test1.example.com
+      TEST2_HOSTNAME: test2.example.com
+      LOGLEVEL: debug
+      FASTCGI_LISTEN_PORT: 9000
+      PORT: 8080
+      IPV4_ONLY: true
+      PRESERVEFILES: /etc/lemonldap-ng /var/lib/lemonldap-ng/conf /var/lib/lemonldap-ng/sessions /var/lib/lemonldap-ng/psessions
+    ports:
+      - 8080:8080
+    volumes:
+      - ./llng/etc:/etc/lemonldap-ng:Z
+      - ./llng/var-conf:/var/lib/lemonldap-ng/conf:Z
+      - ./llng/var-sessions:/var/lib/lemonldap-ng/sessions:Z
+      - ./llng/var-psessions:/var/lib/lemonldap-ng/psessions:Z
+      - ./llng/theme:/usr/share/lemonldap-ng/portal/htdocs/static/CustomTheme:Z
+      - ./llng/template:/usr/share/lemonldap-ng/portal/templates/CustomTheme:Z
+      - ./llng/plugins:/usr/share/perl5/Lemonldap/NG/Portal/Plugins/CustomPlugin:Z
+      - ./llng/register:/usr/share/perl5/Lemonldap/NG/Portal/Register/CustomRegister:Z
+      - ./llng/userdb:/usr/share/perl5/Lemonldap/NG/Portal/UserDB/CustomUserdb:Z
+      - ./llng/auth:/usr/share/perl5/Lemonldap/NG/Portal/Auth/CustomAuth:Z
+      - ./llng/captcha:/usr/share/perl5/Lemonldap/NG/Portal/Captcha/CustomCaptcha:Z
+      - ./llng/menutab:/usr/share/perl5/Lemonldap/NG/Portal/MenuTab/CustomMenuTab:Z
+    restart: unless-stopped

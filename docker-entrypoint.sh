@@ -2,6 +2,24 @@
 service cron start
 service anacron start
 
+if [ ! -z ${PORT} ]; then
+  echo "# Changing nginx port to ${PORT}"
+  sed -i -e "s/listen 80;/listen ${PORT};/g" /etc/lemonldap-ng-orig/api-nginx.conf
+  sed -i -e "s/listen 80;/listen ${PORT};/g" /etc/lemonldap-ng-orig/handler-nginx.conf
+  sed -i -e "s/listen 80;/listen ${PORT};/g" /etc/lemonldap-ng-orig/manager-nginx.conf
+  sed -i -e "s/listen 80;/listen ${PORT};/g" /etc/lemonldap-ng-orig/portal-nginx.conf
+  sed -i -e "s/listen 80;/listen ${PORT};/g" /etc/lemonldap-ng-orig/test-nginx.conf
+fi
+
+if [ "${IPV4_ONLY}" = true ]; then
+echo "# Disabling IPV6 in nginx"
+  sed -i -e "/listen \[::\]:80;/d" /etc/lemonldap-ng-orig/api-nginx.conf
+  sed -i -e "/listen \[::\]:80;/d" /etc/lemonldap-ng-orig/handler-nginx.conf
+  sed -i -e "/listen \[::\]:80;/d" /etc/lemonldap-ng-orig/manager-nginx.conf
+  sed -i -e "/listen \[::\]:80;/d" /etc/lemonldap-ng-orig/portal-nginx.conf
+  sed -i -e "/listen \[::\]:80;/d" /etc/lemonldap-ng-orig/test-nginx.conf
+fi
+
 for PRESERVEFILE in ${PRESERVEFILES} ;
 do
     if [ ! "$(ls -A ${PRESERVEFILE} &>/dev/null)" ]; then
