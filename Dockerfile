@@ -7,8 +7,6 @@ ENV SSODOMAIN=example.com \
     LOGLEVEL=info \
     DEBIAN_FRONTEND=noninteractive
 
-EXPOSE 80
-
 # Keep documentation files for Lemonldap that are normally removed by the
 # debian-slim image
 COPY lemonldap.dpkg.cfg /etc/dpkg/dpkg.cfg.d/lemonldap
@@ -41,7 +39,12 @@ RUN echo '# Copy orignal configuration' && \
     cp -a /var/lib/lemonldap-ng/sessions /var/lib/lemonldap-ng/sessions-orig && \
     cp -a /var/lib/lemonldap-ng/psessions /var/lib/lemonldap-ng/psessions-orig
 
+RUN echo "# Reverse proxy clean up" && \
+    rm /etc/lemonldap-ng-orig/*-apache2.conf && \
+    rm /etc/nginx/sites-enabled/default
+
 RUN echo "# Install nginx configuration files" && \
+    ln -s /etc/lemonldap-ng/api-nginx.conf /etc/nginx/sites-enabled/ && \
     ln -s /etc/lemonldap-ng/handler-nginx.conf /etc/nginx/sites-enabled/ && \
     ln -s /etc/lemonldap-ng/portal-nginx.conf /etc/nginx/sites-enabled/ && \
     ln -s /etc/lemonldap-ng/manager-nginx.conf /etc/nginx/sites-enabled/  && \
