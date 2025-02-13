@@ -59,10 +59,13 @@ The custom Perl plugins can be provided in the following locations with the code
 
 Example:
 
+```
     docker run -d -e SSODOMAIN=example.com -e LOGLEVEL=debug -p 80:80 yourname/lemonldap-ng:version
+```
 
 Or
 
+```
     docker run -d \
         -e SSODOMAIN=example.com \
         -e PORTAL_HOSTNAME=portal.example.com \
@@ -73,6 +76,8 @@ Or
         -e PRESERVEFILES=/etc/lemonldap-ng /var/lib/lemonldap-ng/conf /var/lib/lemonldap-ng/sessions /var/lib/lemonldap-ng/psessions \
         -e LOGLEVEL=debug \
         -e FASTCGI_LISTEN_PORT=9000 \
+        -e PORT=80 \
+        -e IPV4_ONLY=true \
         -p 80:80 \
         -p 9000:9000 \
         -v ./llng/etc:/etc/lemonldap-ng \
@@ -88,8 +93,98 @@ Or
         -v ./llng/captcha:/usr/share/perl5/Lemonldap/NG/Portal/Captcha/CustomCaptcha \
         -v ./llng/menutab:/usr/share/perl5/Lemonldap/NG/Portal/MenuTab/CustomMenuTab \
         yourname/lemonldap-ng:version
+```
 
 Don't forget to modify your `/etc/hosts` accordingly
+
+### SELinux
+
+To deploy containers on SELinux distributions you can use the following:
+
+```
+    docker compose -f docker-compose-selinux.yaml up -d
+```
+
+or run the following command:
+
+```
+    docker run -d \
+        -e SSODOMAIN=example.com \
+        -e PORTAL_HOSTNAME=portal.example.com \
+        -e MANAGER_HOSTNAME=manager.example.com \
+        -e HANDLER_HOSTNAME=handler.example.com \
+        -e TEST1_HOSTNAME=test1.example.com \
+        -e TEST2_HOSTNAME=test2.example.com \
+        -e PRESERVEFILES=/etc/lemonldap-ng /var/lib/lemonldap-ng/conf /var/lib/lemonldap-ng/sessions /var/lib/lemonldap-ng/psessions \
+        -e LOGLEVEL=debug \
+        -e FASTCGI_LISTEN_PORT=9000 \
+        -e PORT=8080 \
+        -e IPV4_ONLY=true \
+        -p 8080:8080 \
+        -p 9000:9000 \
+        -v ./llng/etc:/etc/lemonldap-ng:Z \
+        -v ./llng/var-conf:/var/lib/lemonldap-ng/conf:Z \
+        -v ./llng/var-sessions:/var/lib/lemonldap-ng/sessions:Z \
+        -v ./llng/var-psessions:/var/lib/lemonldap-ng/psessions:Z \
+        -v ./llng/theme:/usr/share/lemonldap-ng/portal/htdocs/static/CustomTheme:Z \
+        -v ./llng/template:/usr/share/lemonldap-ng/portal/templates/CustomTheme:Z \
+        -v ./llng/plugins:/usr/share/perl5/Lemonldap/NG/Portal/Plugins/CustomPlugin:Z \
+        -v ./llng/register:/usr/share/perl5/Lemonldap/NG/Portal/Register/CustomRegister:Z \
+        -v ./llng/userdb:/usr/share/perl5/Lemonldap/NG/Portal/UserDB/CustomUserdb:Z \
+        -v ./llng/auth:/usr/share/perl5/Lemonldap/NG/Portal/Auth/CustomAuth:Z \
+        -v ./llng/captcha:/usr/share/perl5/Lemonldap/NG/Portal/Captcha/CustomCaptcha:Z \
+        -v ./llng/menutab:/usr/share/perl5/Lemonldap/NG/Portal/MenuTab/CustomMenuTab:Z \
+        yourname/lemonldap-ng:version
+```
+
+## Reverse proxy configuration
+
+You can use proxy pass functionality in httpd(Apache2) to redirect traffic to lemonldap-ng with the following configuration:
+
+HTTP:
+```
+<VirtualHost *:80>
+  ProxyPreserveHost On
+  ProxyRequests Off
+  CustomLog /var/log/httpd/llng.log combined
+  ServerName example.com
+  ServerAlias portal.example.com auth.example.com manager.example.com reload.example.com
+  ProxyPass / http://127.0.0.1:8080/
+  ProxyPassReverse / http://127.0.0.1:8080/
+</VirtualHost>
+```
+
+HTTPS:
+```
+<VirtualHost *:80>
+  ServerName example.com
+  ServerAlias portal.example.com auth.example.com manager.example.com reload.example.com
+
+  RewriteEngine On
+  RewriteCond %{HTTPS} off
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</VirtualHost>
+
+<VirtualHost *:443>
+  ServerName example.com
+  CustomLog /var/log/httpd/llng.log combined
+
+  SSLEngine on
+  SSLCertificateFile "/path/to/example.com.cert"
+  SSLCertificateKeyFile "/path/to/example.com.key"
+
+  ProxyPreserveHost On
+  ProxyRequests Off
+  ProxyPass / http://127.0.0.1:8080/
+  ProxyPassReverse / http://127.0.0.1:8080/
+</VirtualHost>
+```
+
+For SELinux we will need to allow the redirect of httpd traffic to the lemonldap-ng docker container (:80->:8080)
+
+```
+sudo setsebool -P httpd_can_network_relay on
+```
 
 ## Docker hub
 
