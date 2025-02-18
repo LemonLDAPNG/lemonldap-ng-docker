@@ -1,7 +1,7 @@
 services:
   lemonldap-ng:
     container_name: lemonldap-ng
-    image: yourname/lemonldap-ng:version
+    image: lemonldapng/lemonldap-ng:version
     environment:
       PUID: 1000
       PGID: 1000
