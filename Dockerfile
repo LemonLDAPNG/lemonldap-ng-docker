@@ -7,31 +7,36 @@ ENV SSODOMAIN=example.com \
     LOGLEVEL=info \
     DEBIAN_FRONTEND=noninteractive
 
-EXPOSE 80
-
 # Keep documentation files for Lemonldap that are normally removed by the
 # debian-slim image
 COPY lemonldap.dpkg.cfg /etc/dpkg/dpkg.cfg.d/lemonldap
 
 RUN echo "# Install LemonLDAP::NG source repo" && \
-    apt-get -y update && \
-    apt-get -y install wget apt-transport-https gnupg dumb-init && \
+    apt -y update && \
+    apt -y install wget apt-transport-https gnupg dumb-init && \
     wget -O - https://lemonldap-ng.org/_media/rpm-gpg-key-ow2 | apt-key add - && \
     echo "deb https://lemonldap-ng.org/deb 2.0 main" >/etc/apt/sources.list.d/lemonldap-ng.list
 
 RUN echo "# Enable Debian backports" && \
     echo "deb http://deb.debian.org/debian bullseye-backports main" > /etc/apt/sources.list.d/backports.list
 
-RUN apt-get -y update && \
+RUN apt -y update && \
     echo "# Install LemonLDAP::NG packages" && \
-    apt-get -y install nginx lemonldap-ng cron anacron liblasso-perl libio-string-perl && \
+    apt -y install nginx lemonldap-ng cron anacron liblasso-perl libio-string-perl && \
     echo "# Install LemonLDAP::NG TOTP requirements" && \
-    apt-get -y install libconvert-base32-perl libdigest-hmac-perl && \
+    apt -y install libconvert-base32-perl libdigest-hmac-perl && \
     echo "# Install LemonLDAP::NG WebAuthn requirements" && \
-    apt-get -y install libauthen-webauthn-perl && \
+    apt -y install libauthen-webauthn-perl && \
     echo "# Install some DB drivers" && \
-    apt-get -y install libdbd-mysql-perl libdbd-pg-perl && \
+    apt -y install libdbd-mysql-perl libdbd-pg-perl && \
+    echo "# Install vim required for lmConfigEditor" && \
+    apt -y install vim && \
     echo "\ndaemon off;" >> /etc/nginx/nginx.conf
+
+RUN echo "# Clean up image" && \
+    apt clean && \
+    apt autoremove --yes && \
+    rm -rf /var/lib/{apt,dpkg,cache,log}/
 
 COPY docker-entrypoint.sh /
 
@@ -41,7 +46,12 @@ RUN echo '# Copy orignal configuration' && \
     cp -a /var/lib/lemonldap-ng/sessions /var/lib/lemonldap-ng/sessions-orig && \
     cp -a /var/lib/lemonldap-ng/psessions /var/lib/lemonldap-ng/psessions-orig
 
+RUN echo "# Reverse proxy clean up" && \
+    rm /etc/lemonldap-ng-orig/*-apache2.conf && \
+    rm /etc/nginx/sites-enabled/default
+
 RUN echo "# Install nginx configuration files" && \
+    ln -s /etc/lemonldap-ng/api-nginx.conf /etc/nginx/sites-enabled/ && \
     ln -s /etc/lemonldap-ng/handler-nginx.conf /etc/nginx/sites-enabled/ && \
     ln -s /etc/lemonldap-ng/portal-nginx.conf /etc/nginx/sites-enabled/ && \
     ln -s /etc/lemonldap-ng/manager-nginx.conf /etc/nginx/sites-enabled/  && \

@@ -7,9 +7,9 @@ services:
       PGID: 1000
       TZ: Europe/Paris
       SSODOMAIN: example.com
-      PORTAL_HOSTNAME: portal.example.com
+      PORTAL_HOSTNAME: auth.example.com
       MANAGER_HOSTNAME: manager.example.com
-      HANDLER_HOSTNAME: handler.example.com
+      HANDLER_HOSTNAME: reload.example.com
       TEST1_HOSTNAME: test1.example.com
       TEST2_HOSTNAME: test2.example.com
       LOGLEVEL: debug

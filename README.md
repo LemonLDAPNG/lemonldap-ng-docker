@@ -19,9 +19,9 @@ Use the docker build command:
 The image will run LemonLDAP::NG in demo mode (see http://lemonldap-ng.org/documentation/latest/authdemo).
 
 Add auth.example.com/manager.example.com/test1.example.com/test2.example.com to /etc/hosts on the host
-
-    echo "127.0.0.1 auth.example.com manager.example.com test1.example.com test2.example.com" | sudo tee -a /etc/hosts
-
+```
+    echo "127.0.0.1 auth.example.com manager.example.com reload.example.com test1.example.com test2.example.com" | sudo tee -a /etc/hosts
+```
 Map the container port 80 to host port 80 (option -p) when you run the container to be able to access it
 ```
     sudo docker run -d -p 80:80 lemonldapng/lemonldap-ng:latest
@@ -72,11 +72,12 @@ Example:
 Or
 
 ```
-    docker run -d \
+    sudo docker run -d \
+        --name lemonldap-ng \
         -e SSODOMAIN=example.com \
-        -e PORTAL_HOSTNAME=portal.example.com \
+        -e PORTAL_HOSTNAME=auth.example.com \
         -e MANAGER_HOSTNAME=manager.example.com \
-        -e HANDLER_HOSTNAME=handler.example.com \
+        -e HANDLER_HOSTNAME=reload.example.com \
         -e TEST1_HOSTNAME=test1.example.com \
         -e TEST2_HOSTNAME=test2.example.com \
         -e PRESERVEFILES=/etc/lemonldap-ng /var/lib/lemonldap-ng/conf /var/lib/lemonldap-ng/sessions /var/lib/lemonldap-ng/psessions \
@@ -115,10 +116,11 @@ or run the following command:
 
 ```
     docker run -d \
+        --name lemonldap-ng
         -e SSODOMAIN=example.com \
-        -e PORTAL_HOSTNAME=portal.example.com \
+        -e PORTAL_HOSTNAME=auth.example.com \
         -e MANAGER_HOSTNAME=manager.example.com \
-        -e HANDLER_HOSTNAME=handler.example.com \
+        -e HANDLER_HOSTNAME=reload.example.com \
         -e TEST1_HOSTNAME=test1.example.com \
         -e TEST2_HOSTNAME=test2.example.com \
         -e PRESERVEFILES=/etc/lemonldap-ng /var/lib/lemonldap-ng/conf /var/lib/lemonldap-ng/sessions /var/lib/lemonldap-ng/psessions \
@@ -154,7 +156,7 @@ HTTP:
   ProxyRequests Off
   CustomLog /var/log/httpd/llng.log combined
   ServerName example.com
-  ServerAlias portal.example.com auth.example.com manager.example.com reload.example.com
+  ServerAlias auth.example.com manager.example.com reload.example.com test1.example.com test2.example.com
   ProxyPass / http://127.0.0.1:8080/
   ProxyPassReverse / http://127.0.0.1:8080/
 </VirtualHost>
@@ -164,7 +166,7 @@ HTTPS:
 ```
 <VirtualHost *:80>
   ServerName example.com
-  ServerAlias portal.example.com auth.example.com manager.example.com reload.example.com
+  ServerAlias auth.example.com manager.example.com reload.example.com test1.example.com test2.example.com
 
   RewriteEngine On
   RewriteCond %{HTTPS} off
@@ -176,6 +178,7 @@ HTTPS:
   CustomLog /var/log/httpd/llng.log combined
 
   SSLEngine on
+  SSLCertificateChainFile "/path/to/example.com.cacert.cert"
   SSLCertificateFile "/path/to/example.com.cert"
   SSLCertificateKeyFile "/path/to/example.com.key"
 
@@ -190,6 +193,40 @@ For SELinux we will need to allow the redirect of httpd traffic to the lemonldap
 
 ```
 sudo setsebool -P httpd_can_network_relay on
+```
+
+## Cron session purge
+
+The sessions in lemonldap-ng need to be purged on a regular basis, we will need to add the cronjobs using the command `crontab -e` for the following jobs.
+
+```
+# Lemonldap::NG::Handler Session Purge
+1 * * * * docker exec -it llng bash -c "[ -x /usr/share/lemonldap-ng/bin/purgeLocalCache ] && if [ ! -d /run/systemd/system ]; then /usr/share/lemonldap-ng/bin/purgeLocalCache; fi"
+# Lemonldap::NG::Portal Session Purge
+7 * * * * docker exec -it llng bash -c "[ -x /usr/share/lemonldap-ng/bin/purgeCentralCache ] && if [ ! -d /run/systemd/system ]; then /usr/share/lemonldap-ng/bin/purgeCentralCache; fi"
+```
+
+> [!NOTE]
+> If the build and deployment were conducted using `sudo` make sure to do the same for the `crontab` command.
+
+## Podman
+
+Simply swapping out `docker` with `podman` on the all the commands listed in this README. However you will be required to create volumes manually before executing the command or the compose file.
+
+```
+mkdir -p ./llng
+mkdir -p ./llng/etc
+mkdir -p ./llng/var-conf
+mkdir -p ./llng/var-sessions
+mkdir -p ./llng/var-psessions
+mkdir -p ./llng/theme
+mkdir -p ./llng/template
+mkdir -p ./llng/plugins
+mkdir -p ./llng/register
+mkdir -p ./llng/userdb
+mkdir -p ./llng/auth
+mkdir -p ./llng/captcha
+mkdir -p ./llng/menutab
 ```
 
 ## Docker hub
