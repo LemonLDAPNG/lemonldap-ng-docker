@@ -6,7 +6,13 @@
 
 Use the docker build command:
 
-    docker build --rm -t yourname/lemonldap-ng:version .
+```
+    sudo docker buildx build -t lemonldap-ng:latest .
+```
+
+> [!NOTE]
+> If you would like to deploy the container on port `:80` you will need to use `sudo` to build and deploy the image.
+> Building and deploying without `sudo` can be used to deploy containers on port > 1024.
 
 ## Run the image
 
@@ -17,9 +23,9 @@ Add auth.example.com/manager.example.com/test1.example.com/test2.example.com to 
     echo "127.0.0.1 auth.example.com manager.example.com test1.example.com test2.example.com" | sudo tee -a /etc/hosts
 
 Map the container port 80 to host port 80 (option -p) when you run the container to be able to access it
-
-    docker run -d -p 80:80 yourname/lemonldap-ng:version
-
+```
+    sudo docker run -d -p 80:80 lemonldapng/lemonldap-ng:latest
+```
 Then connect to http://auth.example.com with your browser and log in with dwho/dwho.
 
 ## Configuration
@@ -60,7 +66,7 @@ The custom Perl plugins can be provided in the following locations with the code
 Example:
 
 ```
-    docker run -d -e SSODOMAIN=example.com -e LOGLEVEL=debug -p 80:80 yourname/lemonldap-ng:version
+    sudo docker run -d --name lemonldap-ng -e SSODOMAIN=example.com -e LOGLEVEL=debug -p 80:80 lemonldapng/lemonldap-ng:version
 ```
 
 Or
@@ -92,7 +98,7 @@ Or
         -v ./llng/auth:/usr/share/perl5/Lemonldap/NG/Portal/Auth/CustomAuth \
         -v ./llng/captcha:/usr/share/perl5/Lemonldap/NG/Portal/Captcha/CustomCaptcha \
         -v ./llng/menutab:/usr/share/perl5/Lemonldap/NG/Portal/MenuTab/CustomMenuTab \
-        yourname/lemonldap-ng:version
+        lemonldapng/lemonldap-ng:version
 ```
 
 Don't forget to modify your `/etc/hosts` accordingly
@@ -134,7 +140,7 @@ or run the following command:
         -v ./llng/auth:/usr/share/perl5/Lemonldap/NG/Portal/Auth/CustomAuth:Z \
         -v ./llng/captcha:/usr/share/perl5/Lemonldap/NG/Portal/Captcha/CustomCaptcha:Z \
         -v ./llng/menutab:/usr/share/perl5/Lemonldap/NG/Portal/MenuTab/CustomMenuTab:Z \
-        yourname/lemonldap-ng:version
+        lemonldapng/lemonldap-ng:version
 ```
 
 ## Reverse proxy configuration
@@ -188,4 +194,4 @@ sudo setsebool -P httpd_can_network_relay on
 
 ## Docker hub
 
-See also https://hub.docker.com/r/coudot/lemonldap-ng/
+See also https://hub.docker.com/r/lemonldapng/lemonldap-ng/
