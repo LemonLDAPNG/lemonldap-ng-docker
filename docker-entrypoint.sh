@@ -4,12 +4,12 @@ service anacron start
 
 if [ ! -z ${PORT} ]; then
   echo "# Changing nginx port to ${PORT}"
-  sed -i -e "s/listen 80;/listen ${PORT};/g" /etc/lemonldap-ng-orig/*-nginx.conf
+  sed -i -e "s/listen 80;/listen ${PORT};/g" /etc/nginx/sites-enabled-orig/*
 fi
 
 if [ "${IPV4_ONLY}" = true ]; then
 echo "# Disabling IPV6 in nginx"
-  sed -i -e "/listen \[::\]:80;/d" /etc/lemonldap-ng-orig/*-nginx.conf
+  sed -i -e "/listen \[::\]:80;/d" /etc/nginx/sites-enabled-orig/*
 fi
 
 for PRESERVEFILE in ${PRESERVEFILES} ;
@@ -53,30 +53,39 @@ fi
 sed -i -e 's/^;checkTime.*/checkTime = 1/' /etc/lemonldap-ng/lemonldap-ng.ini
 
 if [ ! -z ${FASTCGI_LISTEN_PORT+x} ]; then
-    # Remove the SOCKET variable
+    echo "Remove the SOCKET variable"
     sed -i -e "s|^SOCKET=/run/llng-fastcgi-server/llng-fastcgi.sock|#SOCKET=/run/llng-fastcgi-server/llng-fastcgi.sock|" /etc/default/lemonldap-ng-fastcgi-server
 
-    # Add LISTEN variable
+    echo "Add LISTEN variable"
     echo "# Listen" >> /etc/default/lemonldap-ng-fastcgi-server
     echo "LISTEN=0.0.0.0:$FASTCGI_LISTEN_PORT" >> /etc/default/lemonldap-ng-fastcgi-server
 
-    # Update NGinx configuration from UNIX socket to TCP socket
-    sed -i -e "s|fastcgi_pass unix:/var/run/llng-fastcgi-server/llng-fastcgi.sock|fastcgi_pass 0.0.0.0:$FASTCGI_LISTEN_PORT|" /etc/lemonldap-ng/*-nginx.conf
+    echo "Update NGinx configuration from UNIX socket to TCP socket"
+    sed -i -e "s|fastcgi_pass unix:/var/run/llng-fastcgi-server/llng-fastcgi.sock|fastcgi_pass 0.0.0.0:$FASTCGI_LISTEN_PORT|" /etc/nginx/sites-enabled/*-nginx.conf
 
-    # Update upstream llng fastcgi to tcpsocket
-    sed -i -e "s|unix:/var/run/llng-fastcgi-server/llng-fastcgi.sock|0.0.0.0:$FASTCGI_LISTEN_PORT|" /etc/lemonldap-ng/portal-nginx.conf
+    echo "Update upstream llng fastcgi to tcpsocket"
+    sed -i -e "s|unix:/var/run/llng-fastcgi-server/llng-fastcgi.sock|0.0.0.0:$FASTCGI_LISTEN_PORT|" /etc/nginx/sites-enabled/portal-nginx.conf
+
+    echo "Exporting environment variables"
+    . /etc/default/lemonldap-ng-fastcgi-server
+    export SOCKET LISTEN PID USER GROUP
+
+    echo "Starting fast-cgi-server"
+    /etc/init.d/lemonldap-ng-fastcgi-server start
+else
+    echo "Exporting environment variables"
+    . /etc/default/lemonldap-ng-fastcgi-server
+    export SOCKET LISTEN PID USER GROUP
+
+    echo "Creating directory for socket"
+    if [ ! -z ${SOCKET+x} ]; then
+        mkdir -p "$(dirname $SOCKET)"
+        chown www-data "$(dirname $SOCKET)"
+    fi
+
+    echo "Starting fast-cgi-server"
+    /usr/sbin/llng-fastcgi-server --foreground&
 fi
 
-. /etc/default/lemonldap-ng-fastcgi-server
-export SOCKET LISTEN PID USER GROUP
-
-if [ ! -z ${SOCKET+x} ]; then
-    mkdir -p "$(dirname $SOCKET)"
-    chown www-data "$(dirname $SOCKET)"
-fi
-
-# Run the fastcgi server withing this session so that we can get logs in 
-# STDOUT/STDERR
-/usr/sbin/llng-fastcgi-server --foreground&
-
+echo "Starting nginx"
 nginx
