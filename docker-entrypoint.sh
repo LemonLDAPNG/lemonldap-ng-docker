@@ -42,7 +42,7 @@ if [ ! -z ${PROXY_RANGE+x} ]; then
     sed -i -e "s#.*real_ip_header.*#  real_ip_header    X-Forwarded-For;#g" /etc/lemonldap-ng/*
 fi
 
-sed -i "s/example\.com/${SSODOMAIN}/" /etc/lemonldap-ng/* /var/lib/lemonldap-ng/conf/lmConf-1.json
+sed -i "s/\.example\.com/\.${SSODOMAIN}/" /etc/lemonldap-ng/* /var/lib/lemonldap-ng/conf/lmConf-1.json /etc/nginx/sites-enabled/*
 
 # Logging options
 sed -i -e "s/^logLevel.*/logLevel=${LOGLEVEL}/" /etc/lemonldap-ng/lemonldap-ng.ini
