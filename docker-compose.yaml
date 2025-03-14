@@ -1,7 +1,7 @@
 services:
   lemonldap-ng:
     container_name: lemonldap-ng
-    image: lemonldapng/lemonldap-ng:version
+    image: lemonldapng/lemonldap-ng:latest
     environment:
       PUID: 1000
       PGID: 1000
@@ -13,11 +13,14 @@ services:
       TEST1_HOSTNAME: test1.example.com
       TEST2_HOSTNAME: test2.example.com
       LOGLEVEL: debug
-      FASTCGI_LISTEN_PORT: 9000
+      # Starts fast-cgi-server with a port rather than socket
+      #FASTCGI_LISTEN_PORT: 9000
       PORT: 80
       IPV4_ONLY: true
-      PRESERVEFILES: /etc/lemonldap-ng /var/lib/lemonldap-ng/conf /var/lib/lemonldap-ng/sessions /var/lib/lemonldap-ng/psessions
+      PRESERVEFILES: /etc/lemonldap-ng /var/lib/lemonldap-ng/conf /var/lib/lemonldap-ng/sessions /var/lib/lemonldap-ng/psessions /etc/nginx/sites-enabled/
     ports:
+      # Needed only when using fast-cgi-server via port access
+      #- 9000:9000
       - 80:80
     volumes:
       - ./llng/etc:/etc/lemonldap-ng
@@ -32,4 +35,5 @@ services:
       - ./llng/auth:/usr/share/perl5/Lemonldap/NG/Portal/Auth/CustomAuth
       - ./llng/captcha:/usr/share/perl5/Lemonldap/NG/Portal/Captcha/CustomCaptcha
       - ./llng/menutab:/usr/share/perl5/Lemonldap/NG/Portal/MenuTab/CustomMenuTab
+      - ./llng/nginx:/etc/nginx/sites-enabled
     restart: unless-stopped

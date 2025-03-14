@@ -66,10 +66,10 @@ The custom Perl plugins can be provided in the following locations with the code
 Example:
 
 ```
-    sudo docker run -d --name lemonldap-ng -e SSODOMAIN=example.com -e LOGLEVEL=debug -p 80:80 lemonldapng/lemonldap-ng:version
+    sudo docker run -d --name lemonldap-ng -e SSODOMAIN=example.com -e LOGLEVEL=debug -p 80:80 lemonldapng/lemonldap-ng:latest
 ```
 
-Or
+Command to deploy fast-cgi-server and nginx connecting via port 9000:
 
 ```
     sudo docker run -d \
@@ -80,7 +80,7 @@ Or
         -e HANDLER_HOSTNAME=reload.example.com \
         -e TEST1_HOSTNAME=test1.example.com \
         -e TEST2_HOSTNAME=test2.example.com \
-        -e PRESERVEFILES=/etc/lemonldap-ng /var/lib/lemonldap-ng/conf /var/lib/lemonldap-ng/sessions /var/lib/lemonldap-ng/psessions \
+        -e PRESERVEFILES="/etc/lemonldap-ng /var/lib/lemonldap-ng/conf /var/lib/lemonldap-ng/sessions /var/lib/lemonldap-ng/psessions /etc/nginx/sites-enabled" \
         -e LOGLEVEL=debug \
         -e FASTCGI_LISTEN_PORT=9000 \
         -e PORT=80 \
@@ -99,9 +99,41 @@ Or
         -v ./llng/auth:/usr/share/perl5/Lemonldap/NG/Portal/Auth/CustomAuth \
         -v ./llng/captcha:/usr/share/perl5/Lemonldap/NG/Portal/Captcha/CustomCaptcha \
         -v ./llng/menutab:/usr/share/perl5/Lemonldap/NG/Portal/MenuTab/CustomMenuTab \
-        lemonldapng/lemonldap-ng:version
+        -v ./llng/nginx:/etc/nginx/sites-enabled \
+        lemonldapng/lemonldap-ng:latest
 ```
 
+Command to deploy fast-cgi-server and nginx with socket:
+
+```
+    sudo docker run -d \
+        --name lemonldap-ng \
+        -e SSODOMAIN=example.com \
+        -e PORTAL_HOSTNAME=auth.example.com \
+        -e MANAGER_HOSTNAME=manager.example.com \
+        -e HANDLER_HOSTNAME=reload.example.com \
+        -e TEST1_HOSTNAME=test1.example.com \
+        -e TEST2_HOSTNAME=test2.example.com \
+        -e PRESERVEFILES="/etc/lemonldap-ng /var/lib/lemonldap-ng/conf /var/lib/lemonldap-ng/sessions /var/lib/lemonldap-ng/psessions /etc/nginx/sites-enabled" \
+        -e LOGLEVEL=debug \
+        -e PORT=80 \
+        -e IPV4_ONLY=true \
+        -p 80:80 \
+        -v ./llng/etc:/etc/lemonldap-ng \
+        -v ./llng/var-conf:/var/lib/lemonldap-ng/conf \
+        -v ./llng/var-sessions:/var/lib/lemonldap-ng/sessions \
+        -v ./llng/var-psessions:/var/lib/lemonldap-ng/psessions \
+        -v ./llng/theme:/usr/share/lemonldap-ng/portal/htdocs/static/CustomTheme \
+        -v ./llng/template:/usr/share/lemonldap-ng/portal/templates/CustomTheme \
+        -v ./llng/plugins:/usr/share/perl5/Lemonldap/NG/Portal/Plugins/CustomPlugin \
+        -v ./llng/register:/usr/share/perl5/Lemonldap/NG/Portal/Register/CustomRegister \
+        -v ./llng/userdb:/usr/share/perl5/Lemonldap/NG/Portal/UserDB/CustomUserdb \
+        -v ./llng/auth:/usr/share/perl5/Lemonldap/NG/Portal/Auth/CustomAuth \
+        -v ./llng/captcha:/usr/share/perl5/Lemonldap/NG/Portal/Captcha/CustomCaptcha \
+        -v ./llng/menutab:/usr/share/perl5/Lemonldap/NG/Portal/MenuTab/CustomMenuTab \
+        -v ./llng/nginx:/etc/nginx/sites-enabled \
+        lemonldapng/lemonldap-ng:latest
+```
 Don't forget to modify your `/etc/hosts` accordingly
 
 ### SELinux
@@ -112,7 +144,7 @@ To deploy containers on SELinux distributions you can use the following:
     docker compose -f docker-compose-selinux.yaml up -d
 ```
 
-or run the following command:
+or run the following command(port deployment):
 
 ```
     docker run -d \
@@ -123,7 +155,7 @@ or run the following command:
         -e HANDLER_HOSTNAME=reload.example.com \
         -e TEST1_HOSTNAME=test1.example.com \
         -e TEST2_HOSTNAME=test2.example.com \
-        -e PRESERVEFILES=/etc/lemonldap-ng /var/lib/lemonldap-ng/conf /var/lib/lemonldap-ng/sessions /var/lib/lemonldap-ng/psessions \
+        -e PRESERVEFILES="/etc/lemonldap-ng /var/lib/lemonldap-ng/conf /var/lib/lemonldap-ng/sessions /var/lib/lemonldap-ng/psessions /etc/nginx/sites-enabled" \
         -e LOGLEVEL=debug \
         -e FASTCGI_LISTEN_PORT=9000 \
         -e PORT=8080 \
@@ -142,7 +174,40 @@ or run the following command:
         -v ./llng/auth:/usr/share/perl5/Lemonldap/NG/Portal/Auth/CustomAuth:Z \
         -v ./llng/captcha:/usr/share/perl5/Lemonldap/NG/Portal/Captcha/CustomCaptcha:Z \
         -v ./llng/menutab:/usr/share/perl5/Lemonldap/NG/Portal/MenuTab/CustomMenuTab:Z \
-        lemonldapng/lemonldap-ng:version
+        -v ./llng/nginx:/etc/nginx/sites-enabled:Z \
+        lemonldapng/lemonldap-ng:latest
+```
+
+or run the following command(socket deployment):
+
+```
+    docker run -d \
+        --name lemonldap-ng
+        -e SSODOMAIN=example.com \
+        -e PORTAL_HOSTNAME=auth.example.com \
+        -e MANAGER_HOSTNAME=manager.example.com \
+        -e HANDLER_HOSTNAME=reload.example.com \
+        -e TEST1_HOSTNAME=test1.example.com \
+        -e TEST2_HOSTNAME=test2.example.com \
+        -e PRESERVEFILES="/etc/lemonldap-ng /var/lib/lemonldap-ng/conf /var/lib/lemonldap-ng/sessions /var/lib/lemonldap-ng/psessions /etc/nginx/sites-enabled" \
+        -e LOGLEVEL=debug \
+        -e PORT=8080 \
+        -e IPV4_ONLY=true \
+        -p 8080:8080 \
+        -v ./llng/etc:/etc/lemonldap-ng:Z \
+        -v ./llng/var-conf:/var/lib/lemonldap-ng/conf:Z \
+        -v ./llng/var-sessions:/var/lib/lemonldap-ng/sessions:Z \
+        -v ./llng/var-psessions:/var/lib/lemonldap-ng/psessions:Z \
+        -v ./llng/theme:/usr/share/lemonldap-ng/portal/htdocs/static/CustomTheme:Z \
+        -v ./llng/template:/usr/share/lemonldap-ng/portal/templates/CustomTheme:Z \
+        -v ./llng/plugins:/usr/share/perl5/Lemonldap/NG/Portal/Plugins/CustomPlugin:Z \
+        -v ./llng/register:/usr/share/perl5/Lemonldap/NG/Portal/Register/CustomRegister:Z \
+        -v ./llng/userdb:/usr/share/perl5/Lemonldap/NG/Portal/UserDB/CustomUserdb:Z \
+        -v ./llng/auth:/usr/share/perl5/Lemonldap/NG/Portal/Auth/CustomAuth:Z \
+        -v ./llng/captcha:/usr/share/perl5/Lemonldap/NG/Portal/Captcha/CustomCaptcha:Z \
+        -v ./llng/menutab:/usr/share/perl5/Lemonldap/NG/Portal/MenuTab/CustomMenuTab:Z \
+        -v ./llng/nginx:/etc/nginx/sites-enabled:Z \
+        lemonldapng/lemonldap-ng:latest
 ```
 
 ## Reverse proxy configuration
@@ -195,6 +260,10 @@ For SELinux we will need to allow the redirect of httpd traffic to the lemonldap
 sudo setsebool -P httpd_can_network_relay on
 ```
 
+### Using LLNG Handler
+
+LLNG provides functionality to redirect authentication via the Handler before redirecting the user to the application being protected. We provide the ability to mount nginx configuration by mounting a volume to the `/etc/nginx/sites-enabled/` folder and restarting the container. Example nginx configuration can be found [here](https://lemonldap-ng.org/documentation/latest/configvhost.html#reverse-proxy-1).
+
 ## Cron session purge
 
 The sessions in lemonldap-ng need to be purged on a regular basis, we will need to add the cronjobs using the command `crontab -e` for the following jobs.
@@ -227,6 +296,7 @@ mkdir -p ./llng/userdb
 mkdir -p ./llng/auth
 mkdir -p ./llng/captcha
 mkdir -p ./llng/menutab
+mkdir -p ./llng/nginx
 ```
 
 ## Docker hub

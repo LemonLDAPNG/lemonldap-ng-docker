@@ -48,14 +48,9 @@ RUN echo '# Copy orignal configuration' && \
 
 RUN echo "# Reverse proxy clean up" && \
     rm /etc/lemonldap-ng-orig/*-apache2.conf && \
-    rm /etc/nginx/sites-enabled/default
-
-RUN echo "# Install nginx configuration files" && \
-    ln -s /etc/lemonldap-ng/api-nginx.conf /etc/nginx/sites-enabled/ && \
-    ln -s /etc/lemonldap-ng/handler-nginx.conf /etc/nginx/sites-enabled/ && \
-    ln -s /etc/lemonldap-ng/portal-nginx.conf /etc/nginx/sites-enabled/ && \
-    ln -s /etc/lemonldap-ng/manager-nginx.conf /etc/nginx/sites-enabled/  && \
-    ln -s /etc/lemonldap-ng/test-nginx.conf /etc/nginx/sites-enabled/
+    rm /etc/nginx/sites-enabled/default && \
+    mkdir /etc/nginx/sites-enabled-orig && \
+    mv /etc/lemonldap-ng-orig/*-nginx.conf /etc/nginx/sites-enabled-orig/
 
 RUN echo "# Configure nginx to log to standard streams" && \
     ln -sf /dev/stdout /var/log/nginx/access.log && \
