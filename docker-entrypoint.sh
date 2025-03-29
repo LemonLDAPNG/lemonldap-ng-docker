@@ -22,19 +22,19 @@ do
 done
 
 if [ ! -z ${PORTAL_HOSTNAME+x} ]; then
-    sed -i -e "s/auth.example.com/${PORTAL_HOSTNAME}/g" /etc/lemonldap-ng/* /var/lib/lemonldap-ng/conf/lmConf-1.json
+    sed -i -e "s/auth.example.com/${PORTAL_HOSTNAME}/g" /etc/lemonldap-ng/* /var/lib/lemonldap-ng/conf/lmConf-1.json /etc/nginx/sites-enabled/*
 fi
 if [ ! -z ${MANAGER_HOSTNAME+x} ]; then
-    sed -i -e "s/manager.example.com/${MANAGER_HOSTNAME}/g" /etc/lemonldap-ng/* /var/lib/lemonldap-ng/conf/lmConf-1.json
+    sed -i -e "s/manager.example.com/${MANAGER_HOSTNAME}/g" /etc/lemonldap-ng/* /var/lib/lemonldap-ng/conf/lmConf-1.json /etc/nginx/sites-enabled/*
 fi
 if [ ! -z ${HANDLER_HOSTNAME+x} ]; then
-    sed -i -e "s/reload.example.com/${HANDLER_HOSTNAME}/g" /etc/lemonldap-ng/* /var/lib/lemonldap-ng/conf/lmConf-1.json
+    sed -i -e "s/reload.example.com/${HANDLER_HOSTNAME}/g" /etc/lemonldap-ng/* /var/lib/lemonldap-ng/conf/lmConf-1.json /etc/nginx/sites-enabled/*
 fi
 if [ ! -z ${TEST1_HOSTNAME+x} ]; then
-    sed -i -e "s/test1.example.com/${TEST1_HOSTNAME}/g" /etc/lemonldap-ng/* /var/lib/lemonldap-ng/conf/lmConf-1.json
+    sed -i -e "s/test1.example.com/${TEST1_HOSTNAME}/g" /etc/lemonldap-ng/* /var/lib/lemonldap-ng/conf/lmConf-1.json /etc/nginx/sites-enabled/*
 fi
 if [ ! -z ${TEST2_HOSTNAME+x} ]; then
-    sed -i -e "s/test2.example.com/${TEST2_HOSTNAME}/g" /etc/lemonldap-ng/* /var/lib/lemonldap-ng/conf/lmConf-1.json
+    sed -i -e "s/test2.example.com/${TEST2_HOSTNAME}/g" /etc/lemonldap-ng/* /var/lib/lemonldap-ng/conf/lmConf-1.json /etc/nginx/sites-enabled/*
 fi
 
 if [ ! -z ${PROXY_RANGE+x} ]; then
