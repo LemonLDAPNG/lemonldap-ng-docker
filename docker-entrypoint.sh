@@ -38,8 +38,8 @@ if [ ! -z ${TEST2_HOSTNAME+x} ]; then
 fi
 
 if [ ! -z ${PROXY_RANGE+x} ]; then
-    sed -i -e "s#.*set_real_ip_from.*#  set_real_ip_from ${PROXY_RANGE};#g" /etc/lemonldap-ng/*
-    sed -i -e "s#.*real_ip_header.*#  real_ip_header    X-Forwarded-For;#g" /etc/lemonldap-ng/*
+    sed -i -e "s#.*set_real_ip_from.*#  set_real_ip_from ${PROXY_RANGE};#g" /etc/nginx/sites-enabled/*
+    sed -i -e "s#.*real_ip_header.*#  real_ip_header    X-Forwarded-For;#g" /etc/nginx/sites-enabled/*
 fi
 
 sed -i "s/\.example\.com/\.${SSODOMAIN}/" /etc/lemonldap-ng/* /var/lib/lemonldap-ng/conf/lmConf-1.json /etc/nginx/sites-enabled/*
