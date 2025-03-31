@@ -17,7 +17,7 @@ services:
       #FASTCGI_LISTEN_PORT: 9000
       PORT: 8080
       IPV4_ONLY: true
-      PRESERVEFILES: /etc/lemonldap-ng /var/lib/lemonldap-ng/conf /var/lib/lemonldap-ng/sessions /var/lib/lemonldap-ng/psessions
+      PRESERVEFILES: /etc/lemonldap-ng /var/lib/lemonldap-ng/conf /var/lib/lemonldap-ng/sessions /var/lib/lemonldap-ng/psessions /etc/nginx/sites-enabled
     ports:
       # Needed only when using fast-cgi-server via port access
       #- 9000:9000
