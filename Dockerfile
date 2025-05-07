@@ -50,12 +50,13 @@ RUN echo "# Reverse proxy clean up" && \
     rm /etc/lemonldap-ng-orig/*-apache2.conf && \
     rm /etc/nginx/sites-enabled/default && \
     mkdir /etc/nginx/sites-enabled-orig && \
-    mv /etc/lemonldap-ng-orig/*-nginx.conf /etc/nginx/sites-enabled-orig/
+    mv /etc/lemonldap-ng-orig/*-nginx.conf /etc/nginx/sites-enabled-orig/ && \
+    cp /etc/nginx/sites-enabled-orig/* /etc/nginx/sites-enabled/
 
 RUN echo "# Configure nginx to log to standard streams" && \
     ln -sf /dev/stdout /var/log/nginx/access.log && \
     ln -sf /dev/stderr /var/log/nginx/error.log
 
-VOLUME ["/etc/lemonldap-ng","/var/lib/lemonldap-ng/conf", "/var/lib/lemonldap-ng/sessions", "/var/lib/lemonldap-ng/psessions"]
+VOLUME ["/etc/lemonldap-ng","/var/lib/lemonldap-ng/conf", "/var/lib/lemonldap-ng/sessions", "/var/lib/lemonldap-ng/psessions", "/etc/nginx/sites-enabled/"]
 
 ENTRYPOINT ["dumb-init","--","/bin/sh", "/docker-entrypoint.sh"]
